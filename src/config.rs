@@ -78,6 +78,9 @@ pub struct Colors {
     pub muted: Color,
     #[serde(deserialize_with = "hex")]
     pub accent: Color,
+    /// Drawn over the blurred desktop instead of `background`, scaled by `blur_opacity`.
+    #[serde(deserialize_with = "optional_hex")]
+    pub tint: Option<Color>,
 }
 
 impl Default for Config {
@@ -129,6 +132,7 @@ impl Default for Colors {
             text: Color::from_rgb(220, 222, 235),
             muted: Color::from_rgb(130, 134, 156),
             accent: Color::from_rgb(138, 173, 255),
+            tint: None,
         }
     }
 }
@@ -195,6 +199,8 @@ selected = "#343a58"
 text = "#dcdeeb"
 muted = "#82869c"
 accent = "#8aadff"
+# Tint over the blurred desktop; defaults to the background color.
+# tint = "#1e2240"
 "##;
 
 impl Config {
@@ -235,6 +241,10 @@ fn hex<'de, D: Deserializer<'de>>(deserializer: D) -> Result<Color, D::Error> {
     parse_hex(&value).ok_or_else(|| D::Error::custom(format!("invalid color {value:?}")))
 }
 
+fn optional_hex<'de, D: Deserializer<'de>>(deserializer: D) -> Result<Option<Color>, D::Error> {
+    hex(deserializer).map(Some)
+}
+
 fn parse_hex(value: &str) -> Option<Color> {
     let hex = value.strip_prefix('#')?;
     let byte = |i: usize| u8::from_str_radix(hex.get(i..i + 2)?, 16).ok();
@@ -252,6 +262,14 @@ mod tests {
     #[test]
     fn example_parses() {
         toml::from_str::<Config>(EXAMPLE).unwrap();
+    }
+
+    #[test]
+    fn tint_is_optional() {
+        let config: Config = toml::from_str("[colors]\ntint = \"#ff000080\"").unwrap();
+        assert_eq!(config.colors.tint, Some(Color::from_argb(128, 255, 0, 0)));
+        assert_eq!(toml::from_str::<Config>("").unwrap().colors.tint, None);
+        assert!(toml::from_str::<Config>("[colors]\ntint = \"red\"").is_err());
     }
 
     #[test]

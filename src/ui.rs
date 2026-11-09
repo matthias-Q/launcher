@@ -675,6 +675,8 @@ impl App for Launcher {
             .map(|((backdrop, handle), (x, y))| {
                 let monitor = backdrop.monitor;
                 image(handle)
+                    // Siblings share a layer and could paint over the tinted panel.
+                    .layer(Layer::Relative(-1))
                     .position(
                         Position::new_absolute()
                             .left((monitor.x - x) as f32 / scale)
@@ -686,10 +688,11 @@ impl App for Launcher {
                     .sampling_mode(SamplingMode::Bilinear)
             });
         let background = if backdrop.is_some() {
-            let opacity = config.blur_opacity.clamp(0., 1.);
+            // Scales the color's own alpha.
             colors
-                .background
-                .with_a((colors.background.a() as f32 * opacity) as u8)
+                .tint
+                .unwrap_or(colors.background)
+                .with_af32(config.blur_opacity.clamp(0., 1.))
         } else {
             colors.background
         };
@@ -1159,20 +1162,23 @@ mod tests {
         window
     }
 
-    fn panel_alpha(runner: &TestingRunner) -> Vec<u8> {
-        let background = config().colors.background;
+    /// Alphas of the rects filled with `color`, ignoring its own alpha.
+    fn fill_alphas(runner: &TestingRunner, color: Color) -> Vec<u8> {
         runner.find_many(|_, element| {
             let rect = Rect::try_downcast(element)?;
             match rect.style.background {
-                Fill::Color(color)
-                    if (color.r(), color.g(), color.b())
-                        == (background.r(), background.g(), background.b()) =>
+                Fill::Color(fill)
+                    if (fill.r(), fill.g(), fill.b()) == (color.r(), color.g(), color.b()) =>
                 {
-                    Some(color.a())
+                    Some(fill.a())
                 }
                 _ => None,
             }
         })
+    }
+
+    fn panel_alpha(runner: &TestingRunner) -> Vec<u8> {
+        fill_alphas(runner, config().colors.background)
     }
 
     #[test]
@@ -1197,5 +1203,72 @@ mod tests {
                 .is_none()
         );
         assert_eq!(panel_alpha(&plain), [255]);
+    }
+
+    #[test]
+    fn tints_the_desktop_with_the_tint_color() {
+        let tint = Color::from_argb(200, 90, 20, 140);
+        let mut config = config();
+        config.colors.tint = Some(tint);
+        let window = striped_desktop((0, 0));
+        let data = LauncherData {
+            modules: vec![dmenu("a")],
+            tabs: vec![Tab::Module(0)],
+            initial: 0,
+            icons: IconResolver::new(Some("hicolor"), 32),
+            rounded: false,
+            dmenu: None,
+            host: Box::new(Rc::new(Recorder::default())),
+            window: Rc::new(window),
+            config: config.clone(),
+        };
+        let size = (config.width, config.window_height(false));
+        let app = freya_core::element::AppComponent::new(Launcher {
+            data: Rc::new(data),
+        });
+        let (mut runner, ()) = TestingRunner::new(app, size.into(), |_| {}, 1.);
+        settle(&mut runner);
+        let expected = 200. * config.blur_opacity;
+        let alphas = fill_alphas(&runner, tint);
+        assert!(
+            alphas.len() == 1 && (alphas[0] as f32 - expected).abs() <= 1.,
+            "{alphas:?}"
+        );
+        assert!(panel_alpha(&runner).is_empty());
+    }
+
+    #[test]
+    fn opaque_tint_hides_the_desktop() {
+        let tint = Color::from_rgb(60, 30, 110);
+        let mut config = config();
+        config.colors.tint = Some(tint);
+        config.blur_opacity = 1.;
+        let data = LauncherData {
+            modules: vec![dmenu("a")],
+            tabs: vec![Tab::Module(0)],
+            initial: 0,
+            icons: IconResolver::new(Some("hicolor"), 32),
+            rounded: false,
+            dmenu: None,
+            host: Box::new(Rc::new(Recorder::default())),
+            window: Rc::new(striped_desktop((0, 0))),
+            config: config.clone(),
+        };
+        let size = (config.width, config.window_height(false));
+        let app = freya_core::element::AppComponent::new(Launcher {
+            data: Rc::new(data),
+        });
+        let (mut runner, ()) = TestingRunner::new(app, size.into(), |_| {}, 1.);
+        // Rendering needs the entrance fade to have run.
+        runner.poll(Duration::from_millis(5), Duration::from_millis(100));
+        let png = runner.render();
+        let pixmap = resvg::tiny_skia::Pixmap::decode_png(png.as_bytes()).unwrap();
+        // Below the only row, where nothing but the panel covers the desktop.
+        let (x, y) = (size.0 as u32 / 2, size.1 as u32 - 20);
+        let pixel = pixmap.pixel(x, y).unwrap().demultiply();
+        assert_eq!(
+            (pixel.red(), pixel.green(), pixel.blue()),
+            (tint.r(), tint.g(), tint.b())
+        );
     }
 }
