@@ -1,3 +1,4 @@
+mod backdrop;
 mod calc;
 mod config;
 mod emoji;
@@ -21,12 +22,13 @@ use freya::{
     winit::{
         dpi::PhysicalPosition,
         platform::x11::{WindowAttributesExtX11, WindowType},
+        raw_window_handle::{HasWindowHandle, RawWindowHandle},
         window::WindowLevel,
     },
 };
 use icons::IconResolver;
 use modules::{Module, ModuleKind, Tab};
-use ui::{DmenuOptions, Launcher, LauncherData, Process};
+use ui::{DmenuOptions, Launcher, LauncherData, Process, WindowInfo};
 
 /// Fuzzy searchable application launcher.
 ///
@@ -75,6 +77,10 @@ fn main() {
     }
     let config = Config::load(args.config.clone());
 
+    // Grabbed while everything else loads; it has to happen before our window is mapped.
+    let capture = (config.blur > 0.)
+        .then(|| std::thread::spawn(|| backdrop::pointer_monitor().and_then(backdrop::capture)));
+
     // Scale is unknown before the window exists; load images for HiDPI so they stay sharp.
     let icon_pixels = config.icon_size as u32 * 2;
 
@@ -101,6 +107,8 @@ fn main() {
     let height = config.window_height(show_tabs) as f64;
     let default_font = config.font_family.clone();
     let rounded = config.window_radius > 0. && windows::has_compositor();
+    let blur = config.blur;
+    let window = Rc::new(WindowInfo::default());
 
     let launcher = Launcher {
         data: Rc::new(LauncherData {
@@ -112,6 +120,7 @@ fn main() {
             config,
             dmenu,
             host: Box::new(Process),
+            window: window.clone(),
         }),
     };
 
@@ -130,25 +139,58 @@ fn main() {
                 .with_resizable(false)
                 .with_transparency(rounded)
                 .with_background(Color::TRANSPARENT)
-                .with_window_attributes(move |attributes, event_loop| {
-                    // Dialogs float in tiling window managers (awesome, i3, ...).
-                    let attributes = attributes
-                        .with_window_level(WindowLevel::AlwaysOnTop)
-                        .with_x11_window_type(vec![WindowType::Dialog]);
-                    // Center on the primary monitor. Wayland compositors ignore this and
-                    // place the window themselves.
-                    let Some(monitor) = event_loop
-                        .primary_monitor()
-                        .or_else(|| event_loop.available_monitors().next())
-                    else {
-                        return attributes;
+                .with_window_attributes({
+                    let window = window.clone();
+                    move |attributes, event_loop| {
+                        // Dialogs float in tiling window managers (awesome, i3, ...).
+                        let attributes = attributes
+                            .with_window_level(WindowLevel::AlwaysOnTop)
+                            .with_x11_window_type(vec![WindowType::Dialog]);
+                        let captured = capture.and_then(|thread| {
+                            thread
+                                .join()
+                                .unwrap_or_else(|_| Err("capture panicked".into()))
+                                .map_err(|err| {
+                                    eprintln!("launch: cannot capture the desktop to blur: {err}")
+                                })
+                                .ok()
+                        });
+                        // Center on the captured monitor, the one under the pointer, which is
+                        // where window managers tend to open windows. Wayland compositors
+                        // ignore this and place the window themselves.
+                        let Some(monitor) = event_loop
+                            .available_monitors()
+                            .find(|monitor| {
+                                captured.as_ref().is_some_and(|captured| {
+                                    let origin = monitor.position();
+                                    (origin.x, origin.y) == (captured.monitor.x, captured.monitor.y)
+                                })
+                            })
+                            .or_else(|| event_loop.primary_monitor())
+                            .or_else(|| event_loop.available_monitors().next())
+                        else {
+                            return attributes;
+                        };
+                        let scale = monitor.scale_factor();
+                        let origin = monitor.position();
+                        let size = monitor.size();
+                        let x = origin.x + ((size.width as f64 - width * scale) / 2.) as i32;
+                        let y = origin.y + ((size.height as f64 - height * scale) / 2.) as i32;
+                        window.position.set(Some((x, y)));
+                        if let Some(mut captured) = captured {
+                            captured.blur(blur * scale as f32);
+                            let _ = window.backdrop.set(captured);
+                        }
+                        attributes.with_position(PhysicalPosition::new(x, y))
+                    }
+                })
+                .with_window_handle(move |handle| {
+                    let id = match handle.window_handle().map(|handle| handle.as_raw()) {
+                        Ok(RawWindowHandle::Xlib(handle)) => Some(handle.window as u32),
+                        Ok(RawWindowHandle::Xcb(handle)) => Some(handle.window.get()),
+                        _ => None,
                     };
-                    let scale = monitor.scale_factor();
-                    let origin = monitor.position();
-                    let size = monitor.size();
-                    let x = origin.x + ((size.width as f64 - width * scale) / 2.) as i32;
-                    let y = origin.y + ((size.height as f64 - height * scale) / 2.) as i32;
-                    attributes.with_position(PhysicalPosition::new(x, y))
+                    window.id.set(id);
                 }),
         ),
     );

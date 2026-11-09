@@ -1,12 +1,24 @@
-use std::{cell::Cell, error::Error, io::Write, rc::Rc};
+use std::{
+    cell::{Cell, OnceCell},
+    error::Error,
+    io::Write,
+    rc::Rc,
+    time::Duration,
+};
 
-use freya::{animation::*, prelude::*};
+use freya::{
+    animation::*,
+    elements::image::{ImageHandle, image},
+    engine::prelude::AlphaType,
+    prelude::*,
+};
 use nucleo_matcher::{
     Matcher, Utf32Str,
     pattern::{CaseMatching, Normalization, Pattern},
 };
 
 use crate::{
+    backdrop::Backdrop,
     config::{Config, TAB_HEIGHT},
     emoji,
     entries::{self, Action, Entry, EntryIcon},
@@ -61,6 +73,17 @@ pub struct LauncherData {
     /// Set in dmenu mode.
     pub dmenu: Option<DmenuOptions>,
     pub host: Box<dyn Host>,
+    pub window: Rc<WindowInfo>,
+}
+
+/// Filled in while the native window is created.
+#[derive(Default)]
+pub struct WindowInfo {
+    /// The blurred desktop of the monitor the window opens on.
+    pub backdrop: OnceCell<Backdrop>,
+    pub id: Cell<Option<u32>>,
+    /// Requested top-left corner in physical root window pixels.
+    pub position: Cell<Option<(i32, i32)>>,
 }
 
 impl LauncherData {
@@ -94,7 +117,14 @@ impl LauncherData {
 
     /// Runs `hit`, then exits unless `keep_open`. Entries that need confirmation only arm on
     /// the first call. Returns whether the hit is now armed.
-    fn activate(&self, ranked: &[Ranked], hit: Option<Hit>, query: &str, keep_open: bool, armed: Option<Hit>) -> bool {
+    fn activate(
+        &self,
+        ranked: &[Ranked],
+        hit: Option<Hit>,
+        query: &str,
+        keep_open: bool,
+        armed: Option<Hit>,
+    ) -> bool {
         let Some((m, i)) = hit else {
             let custom = self
                 .dmenu
@@ -212,7 +242,8 @@ impl App for Launcher {
                     .collect::<Vec<Vec<Hit>>>()
             }
         });
-        let hit_at = move |position: usize| tab_results.peek()[*active.peek()].get(position).copied();
+        let hit_at =
+            move |position: usize| tab_results.peek()[*active.peek()].get(position).copied();
 
         // A new query or tab starts back at the top.
         use_side_effect(move || {
@@ -234,6 +265,32 @@ impl App for Launcher {
             } else if was_focused.get() {
                 std::process::exit(1);
             }
+        });
+
+        let backdrop_image = use_hook(|| {
+            let backdrop = data.window.backdrop.get()?;
+            ImageHandle::from_rgba(
+                backdrop.width,
+                backdrop.height,
+                backdrop.bytes(),
+                AlphaType::Opaque,
+            )
+        });
+        // The window manager may move the window when mapping it; follow it so the backdrop
+        // lines up with the real desktop.
+        let mut window_position = use_state(|| data.window.position.get());
+        use_hook(|| {
+            let (Some(_), Some(id)) = (data.window.backdrop.get(), data.window.id.get()) else {
+                return;
+            };
+            spawn(async move {
+                for _ in 0..40 {
+                    if let Some(position) = thread(move || windows::position(id).ok()).await {
+                        window_position.set_if_modified(Some(position));
+                    }
+                    timer(Duration::from_millis(25)).await;
+                }
+            });
         });
 
         // Fade and slide the whole panel in on open.
@@ -570,7 +627,9 @@ impl App for Launcher {
 
         let is_empty = |module: &Module| module.entries.is_empty() && module.compute.is_none();
         let empty_text = match active_tab {
-            Tab::Module(m) if data.modules[m].compute.is_some() => "Type a calculation, like 2^10 / 3",
+            Tab::Module(m) if data.modules[m].compute.is_some() => {
+                "Type a calculation, like 2^10 / 3"
+            }
             Tab::Module(m) if is_empty(&data.modules[m]) => "Nothing here",
             Tab::All if data.modules.iter().all(is_empty) => "Nothing here",
             _ => "No matches",
@@ -606,11 +665,39 @@ impl App for Launcher {
         } else {
             0.
         };
+        let scale = *Platform::get().current_window().scale_factor.read() as f32;
+        let backdrop = data
+            .window
+            .backdrop
+            .get()
+            .zip(backdrop_image.clone())
+            .zip(*window_position.read())
+            .map(|((backdrop, handle), (x, y))| {
+                let monitor = backdrop.monitor;
+                image(handle)
+                    .position(
+                        Position::new_absolute()
+                            .left((monitor.x - x) as f32 / scale)
+                            .top((monitor.y - y) as f32 / scale),
+                    )
+                    .width(Size::px(monitor.width as f32 / scale))
+                    .height(Size::px(monitor.height as f32 / scale))
+                    .aspect_ratio(AspectRatio::None)
+                    .sampling_mode(SamplingMode::Bilinear)
+            });
+        let background = if backdrop.is_some() {
+            let opacity = config.blur_opacity.clamp(0., 1.);
+            colors
+                .background
+                .with_a((colors.background.a() as f32 * opacity) as u8)
+        } else {
+            colors.background
+        };
 
-        rect()
+        let panel = rect()
             .width(Size::fill())
             .height(Size::fill())
-            .background(colors.background)
+            .background(background)
             .corner_radius(radius)
             .border(
                 data.rounded
@@ -620,11 +707,19 @@ impl App for Launcher {
             .font_size(config.font_size)
             .padding(Gaps::new_all(config.padding))
             .spacing(config.padding)
-            .opacity(progress)
             .offset_y((1. - progress) * 12.)
             .child(input_row)
             .maybe_child(tabs)
-            .child(list)
+            .child(list);
+
+        rect()
+            .width(Size::fill())
+            .height(Size::fill())
+            .corner_radius(radius)
+            .overflow(Overflow::Clip)
+            .opacity(progress)
+            .maybe_child(backdrop)
+            .child(panel)
     }
 }
 
@@ -672,11 +767,12 @@ fn row(
                 span.color(config.colors.accent)
                     .font_weight(FontWeight::BOLD)
             } else {
-                span.color(config.colors.text).font_weight(if state.selected {
-                    FontWeight::MEDIUM
-                } else {
-                    FontWeight::NORMAL
-                })
+                span.color(config.colors.text)
+                    .font_weight(if state.selected {
+                        FontWeight::MEDIUM
+                    } else {
+                        FontWeight::NORMAL
+                    })
             }
         }));
 
@@ -809,6 +905,14 @@ mod tests {
     }
 
     fn runner(modules: Vec<Module>, dmenu: Option<DmenuOptions>) -> (TestingRunner, Rc<Recorder>) {
+        runner_with_window(modules, dmenu, WindowInfo::default())
+    }
+
+    fn runner_with_window(
+        modules: Vec<Module>,
+        dmenu: Option<DmenuOptions>,
+        window: WindowInfo,
+    ) -> (TestingRunner, Rc<Recorder>) {
         let recorder = Rc::new(Recorder::default());
         let config = config();
         let mut tabs: Vec<Tab> = (0..modules.len()).map(Tab::Module).collect();
@@ -825,8 +929,11 @@ mod tests {
             config,
             dmenu,
             host: Box::new(recorder.clone()),
+            window: Rc::new(window),
         };
-        let app = freya_core::element::AppComponent::new(Launcher { data: Rc::new(data) });
+        let app = freya_core::element::AppComponent::new(Launcher {
+            data: Rc::new(data),
+        });
         let (mut runner, ()) = TestingRunner::new(app, size.into(), |_| {}, 1.);
         settle(&mut runner);
         (runner, recorder)
@@ -884,7 +991,11 @@ mod tests {
             ..DmenuOptions::default()
         };
         let (mut runner, recorder) = runner(vec![dmenu("apple\nbanana")], Some(options));
-        key(&mut runner, Key::Named(NamedKey::ArrowDown), Modifiers::empty());
+        key(
+            &mut runner,
+            Key::Named(NamedKey::ArrowDown),
+            Modifiers::empty(),
+        );
         enter(&mut runner, Modifiers::empty());
         assert_eq!(*recorder.printed.borrow(), ["1"]);
 
@@ -916,8 +1027,16 @@ mod tests {
             ..DmenuOptions::default()
         };
         let (mut runner, recorder) = runner(vec![dmenu("a\nb\nc")], Some(options));
-        key(&mut runner, Key::Named(NamedKey::ArrowDown), Modifiers::empty());
-        key(&mut runner, Key::Named(NamedKey::ArrowDown), Modifiers::empty());
+        key(
+            &mut runner,
+            Key::Named(NamedKey::ArrowDown),
+            Modifiers::empty(),
+        );
+        key(
+            &mut runner,
+            Key::Named(NamedKey::ArrowDown),
+            Modifiers::empty(),
+        );
         enter(&mut runner, Modifiers::SHIFT);
         assert_eq!(recorder.exit.get(), None);
         enter(&mut runner, Modifiers::SHIFT);
@@ -931,7 +1050,11 @@ mod tests {
     fn keep_open_prints_without_exiting() {
         let (mut runner, recorder) = runner(vec![dmenu("a\nb")], Some(DmenuOptions::default()));
         enter(&mut runner, Modifiers::SHIFT);
-        key(&mut runner, Key::Named(NamedKey::ArrowDown), Modifiers::empty());
+        key(
+            &mut runner,
+            Key::Named(NamedKey::ArrowDown),
+            Modifiers::empty(),
+        );
         enter(&mut runner, Modifiers::SHIFT);
         assert_eq!(*recorder.printed.borrow(), ["a", "b"]);
         assert_eq!(recorder.exit.get(), None);
@@ -954,27 +1077,39 @@ mod tests {
         type_text(&mut runner, "6*7");
         assert!(texts(&runner).contains(&"Calc".to_string()));
         let names = runner.find_many(|_, element| {
-            Paragraph::try_downcast(element)
-                .map(|el| el.spans.iter().map(|span| span.text.as_ref()).collect::<String>())
+            Paragraph::try_downcast(element).map(|el| {
+                el.spans
+                    .iter()
+                    .map(|span| span.text.as_ref())
+                    .collect::<String>()
+            })
         });
         assert!(names.contains(&"42".to_string()), "{names:?}");
     }
 
     #[test]
     fn destructive_entries_need_a_second_enter() {
-        let power = Module::new("Power", "", power::power_entries(&power::PowerConfig {
-            lock: "true".to_string(),
-            suspend: String::new(),
-            logout: String::new(),
-            shutdown: String::new(),
-            reboot: "true".to_string(),
-            ..power::PowerConfig::default()
-        }));
+        let power = Module::new(
+            "Power",
+            "",
+            power::power_entries(&power::PowerConfig {
+                lock: "true".to_string(),
+                suspend: String::new(),
+                logout: String::new(),
+                shutdown: String::new(),
+                reboot: "true".to_string(),
+                ..power::PowerConfig::default()
+            }),
+        );
         let (mut runner, recorder) = runner(vec![power], None);
         type_text(&mut runner, "reboot");
         enter(&mut runner, Modifiers::empty());
         assert_eq!(recorder.exit.get(), None);
-        assert!(texts(&runner).iter().any(|text| text.starts_with("Press Enter again")));
+        assert!(
+            texts(&runner)
+                .iter()
+                .any(|text| text.starts_with("Press Enter again"))
+        );
         enter(&mut runner, Modifiers::empty());
         assert_eq!(recorder.exit.get(), Some(0));
     }
@@ -982,7 +1117,10 @@ mod tests {
     #[test]
     fn badges_keep_their_width() {
         let (mut runner, _) = runner(
-            vec![dmenu("a very long line that would push the badge out of the row"), dmenu("b")],
+            vec![
+                dmenu("a very long line that would push the badge out of the row"),
+                dmenu("b"),
+            ],
             None,
         );
         settle(&mut runner);
@@ -993,5 +1131,71 @@ mod tests {
         });
         assert!(!widths.is_empty());
         assert!(widths.iter().all(|width| *width > 20.), "{widths:?}");
+    }
+
+    /// A window at `position` over a stand-in desktop with hard-edged stripes.
+    fn striped_desktop(position: (i32, i32)) -> WindowInfo {
+        let (width, height) = (200, 150);
+        let rgba = (0..width * height)
+            .flat_map(|i| {
+                [[230, 60, 60, 255], [60, 200, 90, 255], [70, 110, 240, 255]][(i % width) / 20 % 3]
+            })
+            .collect();
+        let mut backdrop = Backdrop {
+            monitor: crate::backdrop::Monitor {
+                x: 0,
+                y: 0,
+                width: width as u32 * crate::backdrop::DOWNSCALE,
+                height: height as u32 * crate::backdrop::DOWNSCALE,
+            },
+            width: width as u32,
+            height: height as u32,
+            rgba,
+        };
+        backdrop.blur(config().blur);
+        let window = WindowInfo::default();
+        let _ = window.backdrop.set(backdrop);
+        window.position.set(Some(position));
+        window
+    }
+
+    fn panel_alpha(runner: &TestingRunner) -> Vec<u8> {
+        let background = config().colors.background;
+        runner.find_many(|_, element| {
+            let rect = Rect::try_downcast(element)?;
+            match rect.style.background {
+                Fill::Color(color)
+                    if (color.r(), color.g(), color.b())
+                        == (background.r(), background.g(), background.b()) =>
+                {
+                    Some(color.a())
+                }
+                _ => None,
+            }
+        })
+    }
+
+    #[test]
+    fn draws_the_desktop_behind_a_tinted_background() {
+        let (blurred, _) = runner_with_window(vec![dmenu("a\nb")], None, striped_desktop((40, 30)));
+        let image = blurred.find(|node, element| {
+            freya_core::elements::image::Image::try_downcast(element)
+                .map(|image| (image.image_data.blur, node.layout().area))
+        });
+        let (blur, area) = image.expect("backdrop image");
+        assert_eq!(blur, 0., "blurred on the CPU, not by a GPU filter");
+        assert_eq!((area.min_x(), area.min_y()), (-40., -30.));
+        assert_eq!(
+            panel_alpha(&blurred),
+            [(255. * config().blur_opacity) as u8]
+        );
+
+        let (plain, _) = runner(vec![dmenu("a\nb")], None);
+        assert!(
+            plain
+                .find(|_, element| freya_core::elements::image::Image::try_downcast(element))
+                .is_none()
+        );
+        assert_eq!(panel_alpha(&plain), [255]);
     }
 }

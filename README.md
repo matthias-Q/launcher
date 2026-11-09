@@ -11,6 +11,7 @@ A fuzzy searchable application launcher for X11, built with [Freya](https://frey
 - **Power**: lock, suspend, log out, reboot, shut down (destructive ones ask for a second Enter).
 - **All tab**: fuzzy search every enabled module at once.
 - **dmenu mode**: pick a line from stdin and print it.
+- Blurred desktop behind the launcher (X11, `blur` / `blur_opacity` in the config).
 - Configurable look (sizes, fonts, colors, icon theme) via a TOML file.
 
 ## Installation

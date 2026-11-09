@@ -25,6 +25,10 @@ pub struct Config {
     pub corner_radius: f32,
     /// Rounded window corners. Needs a compositor (picom, …); ignored without one.
     pub window_radius: f32,
+    /// Blur radius for the desktop behind the launcher; 0 draws a plain background. X11 only.
+    pub blur: f32,
+    /// Opacity of the background color tinting the blurred desktop, from 0 to 1.
+    pub blur_opacity: f32,
     /// Fade/slide in on open and slide the selection highlight.
     pub animations: bool,
     pub font_family: Option<String>,
@@ -94,6 +98,8 @@ impl Default for Config {
             padding: 14.,
             corner_radius: 8.,
             window_radius: 14.,
+            blur: 10.,
+            blur_opacity: 0.45,
             animations: true,
             font_family: None,
             font_size: 15.,
@@ -146,6 +152,10 @@ padding = 14
 corner_radius = 8
 # Rounded window corners, needs a compositor such as picom.
 window_radius = 14
+# Blur the desktop behind the launcher (X11); 0 disables it.
+blur = 10
+# How strongly the background color tints the blurred desktop, from 0 to 1.
+blur_opacity = 0.45
 animations = true
 # font_family = "Inter"
 font_size = 15

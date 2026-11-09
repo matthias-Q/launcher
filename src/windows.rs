@@ -160,9 +160,23 @@ pub fn close(window: Window) -> Result<()> {
     let (conn, screen) = x11rb::connect(None)?;
     let root = conn.setup().roots[screen].root;
     let atoms = Atoms::new(&conn)?.reply()?;
-    send(&conn, root, window, atoms._NET_CLOSE_WINDOW, [0, 2, 0, 0, 0])?;
+    send(
+        &conn,
+        root,
+        window,
+        atoms._NET_CLOSE_WINDOW,
+        [0, 2, 0, 0, 0],
+    )?;
     conn.flush()?;
     Ok(())
+}
+
+/// The window's top-left corner in root window coordinates.
+pub fn position(window: Window) -> Result<(i32, i32)> {
+    let (conn, screen) = x11rb::connect(None)?;
+    let root = conn.setup().roots[screen].root;
+    let reply = conn.translate_coordinates(window, root, 0, 0)?.reply()?;
+    Ok((reply.dst_x as i32, reply.dst_y as i32))
 }
 
 /// Whether a compositing manager is running, which is needed for transparent windows.

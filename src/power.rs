@@ -32,26 +32,76 @@ impl Default for PowerConfig {
 
 pub fn power_entries(config: &PowerConfig) -> Vec<Entry> {
     [
-        ("lock", "Lock", "Lock the screen", "screen", "system-lock-screen", &config.lock, false),
-        ("suspend", "Suspend", "Sleep, keeping the session in memory", "sleep", "system-suspend", &config.suspend, false),
-        ("hibernate", "Hibernate", "Save the session to disk and power off", "", "system-suspend-hibernate", &config.hibernate, false),
-        ("logout", "Log Out", "End the session", "logoff exit quit", "system-log-out", &config.logout, true),
-        ("reboot", "Reboot", "Restart the computer", "restart", "system-reboot", &config.reboot, true),
-        ("shutdown", "Shut Down", "Power off the computer", "poweroff halt", "system-shutdown", &config.shutdown, true),
+        (
+            "lock",
+            "Lock",
+            "Lock the screen",
+            "screen",
+            "system-lock-screen",
+            &config.lock,
+            false,
+        ),
+        (
+            "suspend",
+            "Suspend",
+            "Sleep, keeping the session in memory",
+            "sleep",
+            "system-suspend",
+            &config.suspend,
+            false,
+        ),
+        (
+            "hibernate",
+            "Hibernate",
+            "Save the session to disk and power off",
+            "",
+            "system-suspend-hibernate",
+            &config.hibernate,
+            false,
+        ),
+        (
+            "logout",
+            "Log Out",
+            "End the session",
+            "logoff exit quit",
+            "system-log-out",
+            &config.logout,
+            true,
+        ),
+        (
+            "reboot",
+            "Reboot",
+            "Restart the computer",
+            "restart",
+            "system-reboot",
+            &config.reboot,
+            true,
+        ),
+        (
+            "shutdown",
+            "Shut Down",
+            "Power off the computer",
+            "poweroff halt",
+            "system-shutdown",
+            &config.shutdown,
+            true,
+        ),
     ]
     .into_iter()
     .filter(|(.., command, _)| !command.trim().is_empty())
-    .map(|(id, name, comment, keywords, icon, command, destructive)| Entry {
-        id: id.to_string(),
-        name: name.to_string(),
-        comment: Some(comment.to_string()),
-        icon: Some(EntryIcon::Name(icon.to_string())),
-        keywords: format!("power {keywords}"),
-        action: Action::Exec {
-            command: command.clone(),
-            terminal: false,
+    .map(
+        |(id, name, comment, keywords, icon, command, destructive)| Entry {
+            id: id.to_string(),
+            name: name.to_string(),
+            comment: Some(comment.to_string()),
+            icon: Some(EntryIcon::Name(icon.to_string())),
+            keywords: format!("power {keywords}"),
+            action: Action::Exec {
+                command: command.clone(),
+                terminal: false,
+            },
+            confirm: destructive && config.confirm,
         },
-        confirm: destructive && config.confirm,
-    })
+    )
     .collect()
 }

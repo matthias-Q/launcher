@@ -65,12 +65,10 @@ impl Module {
                 compute: Some(calc::entries),
                 ..Self::new("Calc", "Calculate…", Vec::new())
             },
-            ModuleKind::Apps => Self::new(
-                "Apps",
-                "Search applications…",
-                entries::desktop_entries(),
-            )
-            .with_history("apps"),
+            ModuleKind::Apps => {
+                Self::new("Apps", "Search applications…", entries::desktop_entries())
+                    .with_history("apps")
+            }
             ModuleKind::Windows => Self::new(
                 "Windows",
                 "Switch to window…",
@@ -83,7 +81,11 @@ impl Module {
             .with_history("emoji"),
             ModuleKind::Power => Self {
                 browse_in_all: false,
-                ..Self::new("Power", "Lock, suspend, reboot…", power::power_entries(&config.power))
+                ..Self::new(
+                    "Power",
+                    "Lock, suspend, reboot…",
+                    power::power_entries(&config.power),
+                )
             }
             .with_history("power"),
         }

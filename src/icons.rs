@@ -238,7 +238,10 @@ fn parse_ini(content: &str) -> Ini<'_> {
     let mut sections = Ini::new();
     let mut current = "";
     for line in content.lines().map(str::trim) {
-        if let Some(section) = line.strip_prefix('[').and_then(|line| line.strip_suffix(']')) {
+        if let Some(section) = line
+            .strip_prefix('[')
+            .and_then(|line| line.strip_suffix(']'))
+        {
             current = section;
         } else if let Some((key, value)) = line.split_once('=') {
             sections
