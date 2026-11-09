@@ -109,6 +109,11 @@ async fn serve(listener: Arc<UnixListener>, proxy: LaunchProxy, config: Option<P
                 continue;
             }
         };
+        // A request always starts with the working directory; an empty one is `launch daemon`
+        // checking whether this daemon is running (say, when the window manager restarts).
+        if message.is_empty() {
+            continue;
+        }
         let reply = match show(&proxy, &open, message, config.clone()).await {
             Ok(()) => "ok".to_string(),
             Err(err) => format!("error: {err}"),
