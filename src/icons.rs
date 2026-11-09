@@ -187,6 +187,7 @@ fn collect_themes(
         return;
     };
     out.push(theme.to_string());
+    let index = parse_ini(&index);
     let inherits = ini_value(&index, "Icon Theme", "Inherits").unwrap_or_default();
     for parent in inherits.split(',').map(str::trim).filter(|p| !p.is_empty()) {
         collect_themes(bases, parent, out, seen);
@@ -198,6 +199,7 @@ fn theme_dirs(bases: &[PathBuf], theme: &str, size: u32) -> Vec<PathBuf> {
     let Some(index) = find_index(bases, theme) else {
         return Vec::new();
     };
+    let index = parse_ini(&index);
     let directories = ini_value(&index, "Icon Theme", "Directories").unwrap_or_default();
 
     let mut ranked: Vec<(u32, &str)> = directories
@@ -229,20 +231,28 @@ fn theme_dirs(bases: &[PathBuf], theme: &str, size: u32) -> Vec<PathBuf> {
         .collect()
 }
 
-fn ini_value(content: &str, section: &str, key: &str) -> Option<String> {
-    let header = format!("[{section}]");
-    let mut in_section = false;
+type Ini<'a> = HashMap<&'a str, HashMap<&'a str, &'a str>>;
+
+/// Parsed once per theme: big themes have hundreds of sections that are each looked up.
+fn parse_ini(content: &str) -> Ini<'_> {
+    let mut sections = Ini::new();
+    let mut current = "";
     for line in content.lines().map(str::trim) {
-        if line.starts_with('[') {
-            in_section = line == header;
-        } else if in_section
-            && let Some((k, v)) = line.split_once('=')
-            && k.trim() == key
-        {
-            return Some(v.trim().to_string());
+        if let Some(section) = line.strip_prefix('[').and_then(|line| line.strip_suffix(']')) {
+            current = section;
+        } else if let Some((key, value)) = line.split_once('=') {
+            sections
+                .entry(current)
+                .or_default()
+                .entry(key.trim())
+                .or_insert(value.trim());
         }
     }
-    None
+    sections
+}
+
+fn ini_value(ini: &Ini, section: &str, key: &str) -> Option<String> {
+    ini.get(section)?.get(key).map(|value| value.to_string())
 }
 
 #[cfg(test)]
@@ -251,16 +261,17 @@ mod tests {
 
     #[test]
     fn reads_ini_sections() {
-        let index =
-            "[Icon Theme]\nInherits=hicolor\nDirectories=48x48/apps\n\n[48x48/apps]\nSize=48\n";
+        let index = parse_ini(
+            "[Icon Theme]\nInherits=hicolor\nDirectories=48x48/apps\n\n[48x48/apps]\nSize=48\n",
+        );
         assert_eq!(
-            ini_value(index, "Icon Theme", "Inherits").as_deref(),
+            ini_value(&index, "Icon Theme", "Inherits").as_deref(),
             Some("hicolor")
         );
         assert_eq!(
-            ini_value(index, "48x48/apps", "Size").as_deref(),
+            ini_value(&index, "48x48/apps", "Size").as_deref(),
             Some("48")
         );
-        assert_eq!(ini_value(index, "48x48/apps", "Inherits"), None);
+        assert_eq!(ini_value(&index, "48x48/apps", "Inherits"), None);
     }
 }

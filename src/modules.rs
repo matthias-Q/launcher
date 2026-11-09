@@ -1,4 +1,4 @@
-use std::cell::RefCell;
+use std::{cell::RefCell, collections::HashSet};
 
 use nucleo_matcher::{
     Matcher, Utf32Str,
@@ -7,18 +7,22 @@ use nucleo_matcher::{
 use serde::Deserialize;
 
 use crate::{
+    calc,
+    config::Config,
     emoji,
     entries::{self, Entry, History},
-    windows,
+    power, windows,
 };
 
 /// The modules that can be listed in the config's `modules` array.
 #[derive(Deserialize, clap::ValueEnum, Clone, Copy, Debug, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
 pub enum ModuleKind {
+    Calc,
     Apps,
     Windows,
     Emoji,
+    Power,
 }
 
 /// One tab of the launcher: a list of entries and how to rank them.
@@ -26,48 +30,67 @@ pub struct Module {
     pub title: &'static str,
     pub placeholder: &'static str,
     pub entries: Vec<Entry>,
+    /// Builds the entries from the query instead of filtering `entries` (calculator).
+    pub compute: Option<fn(&str) -> Vec<Entry>>,
     /// Usage history; modules without one keep their natural order (e.g. window stacking).
     pub history: Option<RefCell<History>>,
     /// Whether the whole list shows up in the "All" tab before anything is typed. Large
     /// modules (emoji) only contribute recently used entries there.
     pub browse_in_all: bool,
+    /// Ids removed during this session, such as closed windows.
+    pub hidden: RefCell<HashSet<String>>,
 }
 
 impl Module {
-    pub fn load(kind: ModuleKind, icon_size: u32) -> Self {
+    pub fn new(title: &'static str, placeholder: &'static str, entries: Vec<Entry>) -> Self {
+        Self {
+            title,
+            placeholder,
+            entries,
+            compute: None,
+            history: None,
+            browse_in_all: true,
+            hidden: RefCell::default(),
+        }
+    }
+
+    fn with_history(mut self, namespace: &str) -> Self {
+        self.history = Some(RefCell::new(History::load(namespace)));
+        self
+    }
+
+    pub fn load(kind: ModuleKind, icon_size: u32, config: &Config) -> Self {
         match kind {
-            ModuleKind::Apps => Self {
-                title: "Apps",
-                placeholder: "Search applications…",
-                entries: entries::desktop_entries(),
-                history: Some(RefCell::new(History::load("apps"))),
-                browse_in_all: true,
+            ModuleKind::Calc => Self {
+                compute: Some(calc::entries),
+                ..Self::new("Calc", "Calculate…", Vec::new())
             },
-            ModuleKind::Windows => Self {
-                title: "Windows",
-                placeholder: "Switch to window…",
-                entries: windows::window_entries(icon_size),
-                history: None,
-                browse_in_all: true,
-            },
+            ModuleKind::Apps => Self::new(
+                "Apps",
+                "Search applications…",
+                entries::desktop_entries(),
+            )
+            .with_history("apps"),
+            ModuleKind::Windows => Self::new(
+                "Windows",
+                "Switch to window…",
+                windows::window_entries(icon_size),
+            ),
             ModuleKind::Emoji => Self {
-                title: "Emoji",
-                placeholder: "Search emoji…",
-                entries: emoji::emoji_entries(),
-                history: Some(RefCell::new(History::load("emoji"))),
                 browse_in_all: false,
-            },
+                ..Self::new("Emoji", "Search emoji…", emoji::emoji_entries())
+            }
+            .with_history("emoji"),
+            ModuleKind::Power => Self {
+                browse_in_all: false,
+                ..Self::new("Power", "Lock, suspend, reboot…", power::power_entries(&config.power))
+            }
+            .with_history("power"),
         }
     }
 
     pub fn dmenu(input: &str) -> Self {
-        Self {
-            title: "dmenu",
-            placeholder: "Filter…",
-            entries: entries::dmenu_entries(input),
-            history: Some(RefCell::new(History::load("dmenu"))),
-            browse_in_all: true,
-        }
+        Self::new("dmenu", "Filter…", entries::dmenu_entries(input)).with_history("dmenu")
     }
 
     pub fn record(&self, entry: &Entry) {
@@ -76,10 +99,39 @@ impl Module {
         }
     }
 
-    /// `(strong, index into entries)`, best match first. A match is strong when every query
-    /// word appears as-is in the name or keywords, rather than as scattered letters. Without a
-    /// query everything counts as strong.
-    pub fn rank(&self, query: &str) -> Vec<(bool, usize)> {
+    /// Drops the entry from the usage history. Returns whether there was a history to change.
+    pub fn forget(&self, entry: &Entry) -> bool {
+        let Some(history) = &self.history else {
+            return false;
+        };
+        history.borrow_mut().forget(&entry.id);
+        true
+    }
+
+    pub fn hide(&self, entry: &Entry) {
+        self.hidden.borrow_mut().insert(entry.id.clone());
+    }
+
+    /// Best match first. A match is strong when every query word appears as-is in the name or
+    /// keywords, rather than as scattered letters. Without a query everything counts as strong.
+    pub fn rank(&self, query: &str) -> Ranked {
+        if let Some(compute) = self.compute {
+            let computed = compute(query);
+            let base = self.entries.len();
+            return Ranked {
+                hits: (base..base + computed.len()).map(|i| (true, i)).collect(),
+                computed,
+            };
+        }
+        Ranked {
+            hits: self.rank_entries(query),
+            computed: Vec::new(),
+        }
+    }
+
+    fn rank_entries(&self, query: &str) -> Vec<(bool, usize)> {
+        let hidden = self.hidden.borrow();
+        let visible = |entry: &Entry| !hidden.contains(&entry.id);
         let history = self.history.as_ref().map(RefCell::borrow);
         let used = |entry: &Entry| {
             history
@@ -91,7 +143,9 @@ impl Module {
         // Without a query: most recently used first, then the rest in natural order
         // (alphabetical for modules with history).
         if query.trim().is_empty() {
-            let mut indices: Vec<usize> = (0..self.entries.len()).collect();
+            let mut indices: Vec<usize> = (0..self.entries.len())
+                .filter(|&i| visible(&self.entries[i]))
+                .collect();
             if history.is_some() {
                 indices.sort_by_cached_key(|&i| {
                     let entry = &self.entries[i];
@@ -118,6 +172,7 @@ impl Module {
             .entries
             .iter()
             .enumerate()
+            .filter(|(_, entry)| visible(entry))
             .filter_map(|(i, entry)| {
                 let name = score(&entry.name);
                 // Keywords only count for half so a name match always wins.
@@ -178,17 +233,37 @@ pub enum Tab {
 /// A result row: `(module index, entry index)`.
 pub type Hit = (usize, usize);
 
+/// A module's results for one query.
+#[derive(PartialEq)]
+pub struct Ranked {
+    /// `(strong, entry index)`, best first. Indices past the module's own entries point into
+    /// `computed`.
+    pub hits: Vec<(bool, usize)>,
+    pub computed: Vec<Entry>,
+}
+
+impl Ranked {
+    pub fn entry<'a>(&'a self, module: &'a Module, index: usize) -> &'a Entry {
+        module
+            .entries
+            .get(index)
+            .unwrap_or_else(|| &self.computed[index - module.entries.len()])
+    }
+}
+
 /// Merges the per-module rankings for the "All" tab: strong matches before fuzzy ones, and
 /// within each tier modules keep their configured order (apps, windows, emoji by default).
-pub fn merge(modules: &[Module], ranked: &[Vec<(bool, usize)>], has_query: bool) -> Vec<Hit> {
+pub fn merge(modules: &[Module], ranked: &[Ranked], has_query: bool) -> Vec<Hit> {
     let mut hits: Vec<(bool, Hit)> = ranked
         .iter()
         .enumerate()
-        .flat_map(|(m, hits)| {
+        .flat_map(|(m, ranked)| {
             let module = &modules[m];
-            hits.iter()
+            ranked
+                .hits
+                .iter()
                 .filter(move |(_, i)| {
-                    has_query || module.browse_in_all || module.was_used(&module.entries[*i])
+                    has_query || module.browse_in_all || module.was_used(ranked.entry(module, *i))
                 })
                 .map(move |&(strong, i)| (strong, (m, i)))
         })
@@ -204,11 +279,8 @@ mod tests {
 
     fn module(names: &[&str], browse_in_all: bool) -> Module {
         Module {
-            title: "test",
-            placeholder: "",
-            entries: entries::dmenu_entries(&names.join("\n")),
-            history: None,
             browse_in_all,
+            ..Module::new("test", "", entries::dmenu_entries(&names.join("\n")))
         }
     }
 
@@ -232,5 +304,24 @@ mod tests {
         let modules = [module(&["a", "b"], true), module(&["c"], false)];
         let ranked: Vec<_> = modules.iter().map(|module| module.rank("")).collect();
         assert_eq!(merge(&modules, &ranked, false), vec![(0, 0), (0, 1)]);
+    }
+
+    #[test]
+    fn hidden_entries_are_not_ranked() {
+        let module = module(&["a", "b"], true);
+        module.hide(&module.entries[0]);
+        assert_eq!(module.rank("").hits, vec![(true, 1)]);
+        assert!(module.rank("a").hits.is_empty());
+    }
+
+    #[test]
+    fn computed_entries_follow_the_static_ones() {
+        let calc = Module {
+            compute: Some(calc::entries),
+            ..Module::new("Calc", "", Vec::new())
+        };
+        let ranked = calc.rank("1+1");
+        assert_eq!(ranked.hits, vec![(true, 0)]);
+        assert_eq!(ranked.entry(&calc, 0).name, "2");
     }
 }

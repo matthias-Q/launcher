@@ -17,6 +17,7 @@ x11rb::atom_manager! {
         UTF8_STRING,
         _NET_CLIENT_LIST_STACKING,
         _NET_ACTIVE_WINDOW,
+        _NET_CLOSE_WINDOW,
         _NET_CURRENT_DESKTOP,
         _NET_DESKTOP_NAMES,
         _NET_WM_NAME,
@@ -120,6 +121,7 @@ fn list(icon_size: u32) -> Result<Vec<Entry>> {
             icon,
             keywords: format!("{class} {instance}"),
             action: Action::Focus { window, desktop },
+            confirm: false,
         });
     }
 
@@ -149,6 +151,16 @@ pub fn focus(window: Window, desktop: Option<u32>) -> Result<()> {
         atoms._NET_ACTIVE_WINDOW,
         [2, 0, 0, 0, 0],
     )?;
+    conn.flush()?;
+    Ok(())
+}
+
+/// Asks the window manager to close the window gracefully.
+pub fn close(window: Window) -> Result<()> {
+    let (conn, screen) = x11rb::connect(None)?;
+    let root = conn.setup().roots[screen].root;
+    let atoms = Atoms::new(&conn)?.reply()?;
+    send(&conn, root, window, atoms._NET_CLOSE_WINDOW, [0, 2, 0, 0, 0])?;
     conn.flush()?;
     Ok(())
 }

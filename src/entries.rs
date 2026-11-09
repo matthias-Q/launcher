@@ -1,6 +1,7 @@
 use std::{
     collections::{HashMap, HashSet},
     env, fs,
+    io::Write,
     os::unix::process::CommandExt,
     path::{Path, PathBuf},
     process::{Command, Stdio},
@@ -9,7 +10,7 @@ use std::{
 use freya::prelude::Bytes;
 
 /// Something that can be picked in the launcher.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Entry {
     /// Stable identifier, used for usage history (desktop file id or the raw dmenu line).
     pub id: String,
@@ -19,9 +20,11 @@ pub struct Entry {
     /// Extra text that is searched but ranked below the name.
     pub keywords: String,
     pub action: Action,
+    /// Needs a second activation before it runs (reboot, shut down, ...).
+    pub confirm: bool,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum EntryIcon {
     /// Freedesktop icon name or absolute path, resolved through the icon theme.
     Name(String),
@@ -31,16 +34,18 @@ pub enum EntryIcon {
     Glyph(String),
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Action {
     /// Run a shell command (desktop entry `Exec`).
     Exec { command: String, terminal: bool },
-    /// Print the line to stdout (dmenu mode).
-    Print,
+    /// Print the line, or its index, to stdout (dmenu mode).
+    Print(usize),
     /// Activate an X11 window, switching to its desktop first.
     Focus { window: u32, desktop: Option<u32> },
     /// Copy and/or type an emoji.
     Emoji(String),
+    /// Put text on the clipboard (calculator results).
+    Copy(String),
 }
 
 /// Collects `.desktop` applications from the XDG data directories.
@@ -72,14 +77,16 @@ pub fn desktop_entries() -> Vec<Entry> {
 pub fn dmenu_entries(input: &str) -> Vec<Entry> {
     input
         .lines()
-        .filter(|line| !line.trim().is_empty())
-        .map(|line| Entry {
+        .enumerate()
+        .filter(|(_, line)| !line.trim().is_empty())
+        .map(|(index, line)| Entry {
             id: line.to_string(),
             name: line.to_string(),
             comment: None,
             icon: None,
             keywords: String::new(),
-            action: Action::Print,
+            action: Action::Print(index),
+            confirm: false,
         })
         .collect()
 }
@@ -209,6 +216,7 @@ fn parse_desktop_file(path: &Path, id: String) -> Option<Entry> {
             command,
             terminal: is_true("Terminal"),
         },
+        confirm: false,
     })
 }
 
@@ -251,6 +259,30 @@ pub fn spawn(command: &str, terminal: bool, terminal_command: Option<&str>) -> s
         .map(|_| ())
 }
 
+/// Pipes `text` into `command`, or `wl-copy` / `xclip` when none is configured.
+pub fn copy(text: &str, command: Option<&str>) -> std::io::Result<()> {
+    let command = command.unwrap_or(if env::var_os("WAYLAND_DISPLAY").is_some() {
+        "wl-copy"
+    } else {
+        "xclip -selection clipboard"
+    });
+    let mut child = Command::new("sh")
+        .arg("-c")
+        .arg(command)
+        .stdin(Stdio::piped())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .spawn()?;
+    child
+        .stdin
+        .take()
+        .expect("stdin is piped")
+        .write_all(text.as_bytes())?;
+    // xclip and wl-copy fork to keep serving the selection, so this returns quickly.
+    child.wait()?;
+    Ok(())
+}
+
 /// Launch count and last launch time per entry id, used to rank recent and frequent entries
 /// first. Stored as `count<TAB>unix_seconds<TAB>id` lines.
 pub struct History {
@@ -289,7 +321,16 @@ impl History {
         let entry = self.uses.entry(id.to_string()).or_default();
         entry.count += 1;
         entry.last = now();
+        self.save();
+    }
 
+    pub fn forget(&mut self, id: &str) {
+        if self.uses.remove(id).is_some() {
+            self.save();
+        }
+    }
+
+    fn save(&self) {
         let Some(path) = &self.path else {
             return;
         };

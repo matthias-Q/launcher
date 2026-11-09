@@ -1,6 +1,5 @@
 use std::{
     env,
-    io::Write,
     os::unix::process::CommandExt,
     process::{Command, Stdio},
 };
@@ -9,7 +8,7 @@ use emojis::Group;
 use freya::engine::prelude::{FontMgr, FontStyle};
 use serde::Deserialize;
 
-use crate::entries::{Action, Entry, EntryIcon};
+use crate::entries::{self, Action, Entry, EntryIcon};
 
 #[derive(Deserialize, Clone, Copy, Debug, Default, PartialEq)]
 #[serde(rename_all = "lowercase")]
@@ -43,6 +42,7 @@ pub fn emoji_entries() -> Vec<Entry> {
                 icon: Some(EntryIcon::Glyph(emoji.as_str().to_string())),
                 keywords: format!("{} {group}", shortcodes.join(" ")),
                 action: Action::Emoji(emoji.as_str().to_string()),
+                confirm: false,
             }
         })
         .collect()
@@ -55,32 +55,12 @@ pub fn deliver(
     action: EmojiAction,
     copy_command: Option<&str>,
 ) -> std::io::Result<()> {
-    let wayland = env::var_os("WAYLAND_DISPLAY").is_some();
-
     if matches!(action, EmojiAction::Copy | EmojiAction::Both) {
-        let command = copy_command.unwrap_or(if wayland {
-            "wl-copy"
-        } else {
-            "xclip -selection clipboard"
-        });
-        let mut child = Command::new("sh")
-            .arg("-c")
-            .arg(command)
-            .stdin(Stdio::piped())
-            .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .spawn()?;
-        child
-            .stdin
-            .take()
-            .expect("stdin is piped")
-            .write_all(emoji.as_bytes())?;
-        // xclip and wl-copy fork to keep serving the selection, so this returns quickly.
-        child.wait()?;
+        entries::copy(emoji, copy_command)?;
     }
 
     if matches!(action, EmojiAction::Type | EmojiAction::Both) {
-        let typer = if wayland {
+        let typer = if env::var_os("WAYLAND_DISPLAY").is_some() {
             r#"sleep 0.2; exec wtype -- "$1""#
         } else {
             r#"sleep 0.2; exec xdotool type --clearmodifiers -- "$1""#

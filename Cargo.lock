@@ -1524,6 +1524,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "freya-testing"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "60481050bd18d8852880976977747705bdb2d7ef0145c044adc67c916ddfc989"
+dependencies = [
+ "accesskit",
+ "freya-clipboard",
+ "freya-components",
+ "freya-core",
+ "freya-engine",
+ "futures-channel",
+ "ragnarok",
+ "torin",
+]
+
+[[package]]
 name = "freya-winit"
 version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2056,6 +2072,8 @@ dependencies = [
  "clap",
  "emojis",
  "freya",
+ "freya-core",
+ "freya-testing",
  "nucleo-matcher",
  "resvg",
  "serde",

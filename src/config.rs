@@ -3,7 +3,7 @@ use std::{env, fs, path::PathBuf};
 use freya::prelude::Color;
 use serde::{Deserialize, Deserializer, de::Error};
 
-use crate::{emoji::EmojiAction, modules::ModuleKind};
+use crate::{emoji::EmojiAction, modules::ModuleKind, power::PowerConfig};
 
 /// User configuration, read from `$XDG_CONFIG_HOME/launch/config.toml`.
 /// Every field is optional; missing ones fall back to [`Config::default`].
@@ -41,7 +41,10 @@ pub struct Config {
     pub placeholder: Option<String>,
     /// Terminal used for `Terminal=true` apps; falls back to `$TERMINAL`, then `x-terminal-emulator`.
     pub terminal: Option<String>,
+    /// Command that reads text to copy from stdin; defaults to `wl-copy` or `xclip`.
+    pub copy_command: Option<String>,
     pub emoji: EmojiConfig,
+    pub power: PowerConfig,
     pub colors: Colors,
 }
 
@@ -50,7 +53,7 @@ pub struct Config {
 pub struct EmojiConfig {
     /// `copy`, `type` or `both`.
     pub action: EmojiAction,
-    /// Command that reads the emoji from stdin; defaults to `wl-copy` or `xclip -selection clipboard`.
+    /// Overrides the top-level `copy_command` for emoji.
     pub copy_command: Option<String>,
 }
 
@@ -76,7 +79,13 @@ pub struct Colors {
 impl Default for Config {
     fn default() -> Self {
         Self {
-            modules: vec![ModuleKind::Apps, ModuleKind::Windows, ModuleKind::Emoji],
+            modules: vec![
+                ModuleKind::Calc,
+                ModuleKind::Apps,
+                ModuleKind::Windows,
+                ModuleKind::Emoji,
+                ModuleKind::Power,
+            ],
             all_tab: true,
             width: 680.,
             rows: 8,
@@ -96,7 +105,9 @@ impl Default for Config {
             close_on_unfocus: true,
             placeholder: None,
             terminal: None,
+            copy_command: None,
             emoji: EmojiConfig::default(),
+            power: PowerConfig::default(),
             colors: Colors::default(),
         }
     }
@@ -122,8 +133,8 @@ pub const TAB_HEIGHT: f32 = 30.;
 pub const EXAMPLE: &str = r##"# ~/.config/launch/config.toml
 
 # Enabled modules in tab order; also the order of the "All" tab before you type.
-# Available: "apps", "windows", "emoji".
-modules = ["apps", "windows", "emoji"]
+# Available: "calc", "apps", "windows", "emoji", "power".
+modules = ["calc", "apps", "windows", "emoji", "power"]
 # An "All" tab, opened by default, that fuzzy searches every module at once.
 all_tab = true
 
@@ -146,11 +157,24 @@ icon_size = 32
 close_on_unfocus = true
 # placeholder = "Search applications…"
 # terminal = "alacritty"
+# Reads text to copy (calculator results, emoji) from stdin.
+# copy_command = "xclip -selection clipboard"
 
 [emoji]
 # "copy", "type" or "both".
 action = "copy"
 # copy_command = "xclip -selection clipboard"
+
+# Power menu commands; an empty string hides the entry.
+[power]
+# Press Enter twice to log out, reboot or shut down.
+confirm = true
+lock = "loginctl lock-session"
+suspend = "systemctl suspend"
+hibernate = ""
+logout = 'loginctl terminate-session "$XDG_SESSION_ID"'
+reboot = "systemctl reboot"
+shutdown = "systemctl poweroff"
 
 # Colors are "#rrggbb" or "#rrggbbaa".
 [colors]
