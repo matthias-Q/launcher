@@ -7,7 +7,7 @@ use nucleo_matcher::{
 use serde::Deserialize;
 
 use crate::{
-    calc,
+    calc, clipboard,
     config::Config,
     emoji,
     entries::{self, Entry, History},
@@ -23,6 +23,7 @@ pub enum ModuleKind {
     Windows,
     Emoji,
     Power,
+    Clipboard,
 }
 
 /// One tab of the launcher: a list of entries and how to rank them.
@@ -39,6 +40,8 @@ pub struct Module {
     pub browse_in_all: bool,
     /// Ids removed during this session, such as closed windows.
     pub hidden: RefCell<HashSet<String>>,
+    /// Shown when the module has no entries at all.
+    pub empty: &'static str,
 }
 
 impl Module {
@@ -51,6 +54,7 @@ impl Module {
             history: None,
             browse_in_all: true,
             hidden: RefCell::default(),
+            empty: "Nothing here",
         }
     }
 
@@ -88,6 +92,16 @@ impl Module {
                 )
             }
             .with_history("power"),
+            // Newest first; clipboard contents are private, so "All" only shows them for a query.
+            ModuleKind::Clipboard => Self {
+                browse_in_all: false,
+                empty: "History is empty — is `launch cliphist daemon` running?",
+                ..Self::new(
+                    "Clipboard",
+                    "Search clipboard history…",
+                    clipboard::clipboard_entries(),
+                )
+            },
         }
     }
 
@@ -133,7 +147,10 @@ impl Module {
 
     fn rank_entries(&self, query: &str) -> Vec<(bool, usize)> {
         let hidden = self.hidden.borrow();
-        let visible = |entry: &Entry| !hidden.contains(&entry.id);
+        let now = clipboard::store::now();
+        let visible = |entry: &Entry| {
+            !hidden.contains(&entry.id) && entry.expires.is_none_or(|expires| expires > now)
+        };
         let history = self.history.as_ref().map(RefCell::borrow);
         let used = |entry: &Entry| {
             history
@@ -314,6 +331,14 @@ mod tests {
         module.hide(&module.entries[0]);
         assert_eq!(module.rank("").hits, vec![(true, 1)]);
         assert!(module.rank("a").hits.is_empty());
+    }
+
+    #[test]
+    fn expired_entries_are_not_ranked() {
+        let mut module = module(&["gone", "kept", "later"], true);
+        module.entries[0].expires = Some(1);
+        module.entries[2].expires = Some(u64::MAX);
+        assert_eq!(module.rank("").hits, vec![(true, 1), (true, 2)]);
     }
 
     #[test]

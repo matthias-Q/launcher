@@ -2077,6 +2077,7 @@ dependencies = [
  "nucleo-matcher",
  "resvg",
  "serde",
+ "serde_json",
  "toml",
  "x11rb 0.14.0",
 ]

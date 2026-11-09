@@ -19,6 +19,7 @@ use nucleo_matcher::{
 
 use crate::{
     backdrop::Backdrop,
+    clipboard,
     config::{Config, TAB_HEIGHT},
     emoji,
     entries::{self, Action, Entry, EntryIcon},
@@ -111,7 +112,9 @@ impl LauncherData {
                 self.config.emoji.copy_command.as_deref().or(copy_command),
             )
             .map_err(Into::into),
-            Action::Copy(text) => entries::copy(text, copy_command).map_err(Into::into),
+            Action::Copy(text) | Action::Clipboard(text) => {
+                entries::copy(text, copy_command).map_err(Into::into)
+            }
         }
     }
 
@@ -166,18 +169,29 @@ impl LauncherData {
         self.host.exit(0);
     }
 
-    /// Closes a window, or forgets the entry's usage history. Returns whether anything changed.
+    /// Closes a window, deletes a clipboard entry, or forgets the entry's usage history.
+    /// Returns whether anything changed.
     fn remove(&self, ranked: &[Ranked], (m, i): Hit) -> bool {
         let module = &self.modules[m];
         let entry = ranked[m].entry(module, i);
-        match entry.action {
-            Action::Focus { window, .. } => match windows::close(window) {
+        match &entry.action {
+            Action::Focus { window, .. } => match windows::close(*window) {
                 Ok(()) => {
                     module.hide(entry);
                     true
                 }
                 Err(err) => {
                     eprintln!("launch: cannot close {:?}: {err}", entry.name);
+                    false
+                }
+            },
+            Action::Clipboard(text) => match clipboard::delete(text) {
+                Ok(()) => {
+                    module.hide(entry);
+                    true
+                }
+                Err(err) => {
+                    eprintln!("launch: cannot delete from the clipboard history: {err}");
                     false
                 }
             },
@@ -215,6 +229,8 @@ impl App for Launcher {
         // The entry waiting for a second Enter to confirm.
         let mut armed = use_state(|| None::<Hit>);
         let mut marked = use_state(Vec::<Hit>::new);
+        // Unix milliseconds, ticking while clipboard secrets count down.
+        let mut now = use_state(clipboard::store::now);
 
         // Rank every module once per query; tabs pick from (or merge) these.
         let ranked = use_memo({
@@ -244,6 +260,32 @@ impl App for Launcher {
         });
         let hit_at =
             move |position: usize| tab_results.peek()[*active.peek()].get(position).copied();
+
+        // Tick once a second for the secrets' countdown, ranking again as they expire.
+        use_hook(|| {
+            let expiries: Vec<u64> = data
+                .modules
+                .iter()
+                .flat_map(|module| module.entries.iter().filter_map(|entry| entry.expires))
+                .collect();
+            if expiries.is_empty() {
+                return;
+            }
+            spawn(async move {
+                loop {
+                    timer(Duration::from_secs(1)).await;
+                    let before = *now.peek();
+                    let time = clipboard::store::now();
+                    now.set(time);
+                    if expiries
+                        .iter()
+                        .any(|&expires| before < expires && expires <= time)
+                    {
+                        *revision.write() += 1;
+                    }
+                }
+            });
+        });
 
         // A new query or tab starts back at the top.
         use_side_effect(move || {
@@ -426,6 +468,7 @@ impl App for Launcher {
                         }
                     }
                     Key::Named(NamedKey::Delete) if shift => remove(current),
+                    Key::Character(c) if ctrl && c == "d" => remove(current),
                     // Tab / Shift+Tab switch tabs; with a single tab they move the selection.
                     Key::Named(NamedKey::Tab) if tab_count > 1 => active.set(tab_step(!shift)),
                     Key::Named(NamedKey::Tab) => select(step(!shift)),
@@ -560,6 +603,7 @@ impl App for Launcher {
         let ranked_now = ranked.read();
         let armed_now = *armed.read();
         let marked_now = marked.read();
+        let time = *now.read();
 
         let rows = tab_results.read()[active_index]
             .iter()
@@ -584,6 +628,9 @@ impl App for Launcher {
                     selected: position == current,
                     armed: armed_now == Some((m, index)),
                     marked: marked_now.contains(&(m, index)),
+                    secret_left: entry
+                        .expires
+                        .map(|expires| expires.saturating_sub(time).div_ceil(1000)),
                 };
                 let mut activate = activate.clone();
                 row(
@@ -630,7 +677,7 @@ impl App for Launcher {
             Tab::Module(m) if data.modules[m].compute.is_some() => {
                 "Type a calculation, like 2^10 / 3"
             }
-            Tab::Module(m) if is_empty(&data.modules[m]) => "Nothing here",
+            Tab::Module(m) if is_empty(&data.modules[m]) => data.modules[m].empty,
             Tab::All if data.modules.iter().all(is_empty) => "Nothing here",
             _ => "No matches",
         };
@@ -738,6 +785,8 @@ struct RowState {
     armed: bool,
     /// Marked for printing (dmenu multi-select).
     marked: bool,
+    /// Seconds until a clipboard secret is forgotten.
+    secret_left: Option<u64>,
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -766,7 +815,9 @@ fn row(
         .text_overflow(TextOverflow::Ellipsis)
         .spans_iter(entry.name.chars().enumerate().map(|(i, c)| {
             let span = Span::new(c.to_string());
-            if matched.contains(&(i as u32)) {
+            if state.secret_left.is_some() {
+                span.color(config.colors.secret)
+            } else if matched.contains(&(i as u32)) {
                 span.color(config.colors.accent)
                     .font_weight(FontWeight::BOLD)
             } else {
@@ -783,6 +834,11 @@ fn row(
         Some((
             format!("Press Enter again to confirm {}", entry.name.to_lowercase()),
             config.colors.accent,
+        ))
+    } else if let Some(left) = state.secret_left {
+        Some((
+            format!("secret  ·  forgotten in {left}s"),
+            config.colors.secret,
         ))
     } else {
         entry

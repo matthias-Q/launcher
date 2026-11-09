@@ -122,6 +122,7 @@ fn list(icon_size: u32) -> Result<Vec<Entry>> {
             keywords: format!("{class} {instance}"),
             action: Action::Focus { window, desktop },
             confirm: false,
+            expires: None,
         });
     }
 

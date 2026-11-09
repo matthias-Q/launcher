@@ -1,5 +1,6 @@
 mod backdrop;
 mod calc;
+mod clipboard;
 mod config;
 mod emoji;
 mod entries;
@@ -15,7 +16,7 @@ use std::{
     rc::Rc,
 };
 
-use clap::Parser;
+use clap::{Parser, Subcommand};
 use config::Config;
 use freya::{
     prelude::*,
@@ -36,6 +37,9 @@ use ui::{DmenuOptions, Launcher, LauncherData, Process, WindowInfo};
 #[derive(Parser)]
 #[command(version)]
 struct Args {
+    #[command(subcommand)]
+    command: Option<Cmd>,
+
     /// Pick a line from stdin and print it, like dmenu.
     #[arg(short, long)]
     dmenu: bool,
@@ -61,7 +65,7 @@ struct Args {
     mode: Option<ModuleKind>,
 
     /// Config file to use instead of the default location.
-    #[arg(short, long, value_name = "PATH")]
+    #[arg(short, long, value_name = "PATH", global = true)]
     config: Option<PathBuf>,
 
     /// Print a commented example config and exit.
@@ -69,13 +73,50 @@ struct Args {
     default_config: bool,
 }
 
+#[derive(Subcommand)]
+enum Cmd {
+    /// Clipboard history. Run `launch cliphist install-service` once to record the clipboard,
+    /// then bind `launch cliphist` to a key. Passwords and tokens are only kept briefly.
+    Cliphist {
+        #[command(subcommand)]
+        command: Option<ClipCmd>,
+    },
+}
+
+#[derive(Subcommand)]
+enum ClipCmd {
+    /// Open the clipboard history (the default).
+    Pick,
+    /// Watch the clipboard and record every change.
+    Daemon,
+    /// Print the history, newest first, one entry per line. Secrets are masked.
+    List,
+    /// Delete the whole history, including secrets.
+    Clear,
+    /// Install, enable and start the daemon as a systemd user service.
+    InstallService,
+    /// Stop, disable and remove the systemd user service.
+    UninstallService,
+}
+
 fn main() {
-    let args = Args::parse();
+    let mut args = Args::parse();
     if args.default_config {
         print!("{}", config::EXAMPLE);
         return;
     }
     let config = Config::load(args.config.clone());
+
+    if let Some(Cmd::Cliphist { command }) = &args.command {
+        match command.as_ref().unwrap_or(&ClipCmd::Pick) {
+            ClipCmd::Pick => args.mode = Some(ModuleKind::Clipboard),
+            ClipCmd::Daemon => return exit_on_error(clipboard::daemon::run(&config.clipboard)),
+            ClipCmd::List => return clipboard::list(),
+            ClipCmd::Clear => return exit_on_error(clipboard::clear()),
+            ClipCmd::InstallService => return exit_on_error(clipboard::service::install()),
+            ClipCmd::UninstallService => return exit_on_error(clipboard::service::uninstall()),
+        }
+    }
 
     // Grabbed while everything else loads; it has to happen before our window is mapped.
     let capture = (config.blur > 0.)
@@ -233,4 +274,11 @@ fn load_modules(args: &Args, config: &Config, icon_pixels: u32) -> (Vec<Module>,
             .collect()
     });
     (modules, initial)
+}
+
+fn exit_on_error(result: std::io::Result<()>) {
+    if let Err(err) = result {
+        eprintln!("launch: {err}");
+        std::process::exit(1);
+    }
 }

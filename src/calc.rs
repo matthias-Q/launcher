@@ -26,6 +26,7 @@ pub fn entries(query: &str) -> Vec<Entry> {
         keywords: String::new(),
         action: Action::Copy(result),
         confirm: false,
+        expires: None,
     }]
 }
 

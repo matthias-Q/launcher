@@ -43,6 +43,7 @@ pub fn emoji_entries() -> Vec<Entry> {
                 keywords: format!("{} {group}", shortcodes.join(" ")),
                 action: Action::Emoji(emoji.as_str().to_string()),
                 confirm: false,
+                expires: None,
             }
         })
         .collect()

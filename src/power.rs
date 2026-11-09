@@ -101,6 +101,7 @@ pub fn power_entries(config: &PowerConfig) -> Vec<Entry> {
                 terminal: false,
             },
             confirm: destructive && config.confirm,
+            expires: None,
         },
     )
     .collect()

@@ -3,7 +3,9 @@ use std::{env, fs, path::PathBuf};
 use freya::prelude::Color;
 use serde::{Deserialize, Deserializer, de::Error};
 
-use crate::{emoji::EmojiAction, modules::ModuleKind, power::PowerConfig};
+use crate::{
+    clipboard::ClipboardConfig, emoji::EmojiAction, modules::ModuleKind, power::PowerConfig,
+};
 
 /// User configuration, read from `$XDG_CONFIG_HOME/launch/config.toml`.
 /// Every field is optional; missing ones fall back to [`Config::default`].
@@ -49,6 +51,7 @@ pub struct Config {
     pub copy_command: Option<String>,
     pub emoji: EmojiConfig,
     pub power: PowerConfig,
+    pub clipboard: ClipboardConfig,
     pub colors: Colors,
 }
 
@@ -78,6 +81,9 @@ pub struct Colors {
     pub muted: Color,
     #[serde(deserialize_with = "hex")]
     pub accent: Color,
+    /// Clipboard secrets (passwords, tokens).
+    #[serde(deserialize_with = "hex")]
+    pub secret: Color,
     /// Drawn over the blurred desktop instead of `background`, scaled by `blur_opacity`.
     #[serde(deserialize_with = "optional_hex")]
     pub tint: Option<Color>,
@@ -117,6 +123,7 @@ impl Default for Config {
             copy_command: None,
             emoji: EmojiConfig::default(),
             power: PowerConfig::default(),
+            clipboard: ClipboardConfig::default(),
             colors: Colors::default(),
         }
     }
@@ -132,6 +139,7 @@ impl Default for Colors {
             text: Color::from_rgb(220, 222, 235),
             muted: Color::from_rgb(130, 134, 156),
             accent: Color::from_rgb(138, 173, 255),
+            secret: Color::from_rgb(238, 153, 160),
             tint: None,
         }
     }
@@ -143,7 +151,8 @@ pub const TAB_HEIGHT: f32 = 30.;
 pub const EXAMPLE: &str = r##"# ~/.config/launch/config.toml
 
 # Enabled modules in tab order; also the order of the "All" tab before you type.
-# Available: "calc", "apps", "windows", "emoji", "power".
+# Available: "calc", "apps", "windows", "emoji", "power", "clipboard".
+# "clipboard" needs the daemon: run `launch cliphist install-service` once.
 modules = ["calc", "apps", "windows", "emoji", "power"]
 # An "All" tab, opened by default, that fuzzy searches every module at once.
 all_tab = true
@@ -190,6 +199,18 @@ logout = 'loginctl terminate-session "$XDG_SESSION_ID"'
 reboot = "systemctl reboot"
 shutdown = "systemctl poweroff"
 
+# Clipboard history, recorded by `launch cliphist daemon`.
+[clipboard]
+max_entries = 500
+# Larger clipboard contents are skipped.
+max_bytes = 1048576
+# Passwords/tokens (password manager hint or heuristics) are kept in memory
+# only (in $XDG_RUNTIME_DIR) and dropped after `secret_ttl` seconds.
+detect_secrets = true
+secret_ttl = 30
+# Empty the clipboard when an expiring secret is still on it.
+clear_expired_secrets = true
+
 # Colors are "#rrggbb" or "#rrggbbaa".
 [colors]
 background = "#181921"
@@ -199,6 +220,7 @@ selected = "#343a58"
 text = "#dcdeeb"
 muted = "#82869c"
 accent = "#8aadff"
+secret = "#ee99a0"
 # Tint over the blurred desktop; defaults to the background color.
 # tint = "#1e2240"
 "##;

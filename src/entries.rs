@@ -22,6 +22,9 @@ pub struct Entry {
     pub action: Action,
     /// Needs a second activation before it runs (reboot, shut down, ...).
     pub confirm: bool,
+    /// Unix milliseconds after which the entry disappears. Set for clipboard secrets, which
+    /// are drawn in the secret color with a countdown.
+    pub expires: Option<u64>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -46,6 +49,8 @@ pub enum Action {
     Emoji(String),
     /// Put text on the clipboard (calculator results).
     Copy(String),
+    /// Put a clipboard history entry back on the clipboard.
+    Clipboard(String),
 }
 
 /// Collects `.desktop` applications from the XDG data directories.
@@ -87,6 +92,7 @@ pub fn dmenu_entries(input: &str) -> Vec<Entry> {
             keywords: String::new(),
             action: Action::Print(index),
             confirm: false,
+            expires: None,
         })
         .collect()
 }
@@ -217,6 +223,7 @@ fn parse_desktop_file(path: &Path, id: String) -> Option<Entry> {
             terminal: is_true("Terminal"),
         },
         confirm: false,
+        expires: None,
     })
 }
 
