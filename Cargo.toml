@@ -1,0 +1,14 @@
+[package]
+name = "launch"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+clap = { version = "4.6.7", features = ["derive"] }
+emojis = "0.9.1"
+freya = { version = "0.5.1", features = ["engine"] }
+nucleo-matcher = "0.3.1"
+resvg = { version = "0.49.0", default-features = false, features = ["svgz"] }
+serde = { version = "1.0.229", features = ["derive"] }
+toml = "1.2.1"
+x11rb = "0.14.0"
