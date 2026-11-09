@@ -2,20 +2,25 @@ mod backdrop;
 mod calc;
 mod clipboard;
 mod config;
+mod daemon;
 mod emoji;
 mod entries;
 mod icons;
 mod modules;
 mod power;
+mod run;
 mod ui;
 mod windows;
 
 use std::{
+    cell::Cell,
     io::{IsTerminal, Read},
     path::PathBuf,
     rc::Rc,
+    thread::JoinHandle,
 };
 
+use backdrop::Backdrop;
 use clap::{Parser, Subcommand};
 use config::Config;
 use freya::{
@@ -29,14 +34,14 @@ use freya::{
 };
 use icons::IconResolver;
 use modules::{Module, ModuleKind, Tab};
-use ui::{DmenuOptions, Launcher, LauncherData, Process, WindowInfo};
+use ui::{DmenuOptions, Host, Launcher, LauncherData, Process, WindowInfo};
 
 /// Fuzzy searchable application launcher.
 ///
 /// The config is read from `$XDG_CONFIG_HOME/launch/config.toml` unless `--config` is given.
 #[derive(Parser)]
 #[command(version)]
-struct Args {
+pub struct Args {
     #[command(subcommand)]
     command: Option<Cmd>,
 
@@ -75,6 +80,10 @@ struct Args {
 
 #[derive(Subcommand)]
 enum Cmd {
+    /// Keep the launcher loaded in the background so it opens faster. Start it with your
+    /// session; `launch` then asks it to open a window and falls back to starting on its own
+    /// when it is not running. dmenu mode never uses it.
+    Daemon,
     /// Clipboard history. Run `launch cliphist install-service` once to record the clipboard,
     /// then bind `launch cliphist` to a key. Passwords and tokens are only kept briefly.
     Cliphist {
@@ -105,19 +114,61 @@ fn main() {
         print!("{}", config::EXAMPLE);
         return;
     }
-    let config = Config::load(args.config.clone());
 
-    if let Some(Cmd::Cliphist { command }) = &args.command {
-        match command.as_ref().unwrap_or(&ClipCmd::Pick) {
-            ClipCmd::Pick => args.mode = Some(ModuleKind::Clipboard),
-            ClipCmd::Daemon => return exit_on_error(clipboard::daemon::run(&config.clipboard)),
-            ClipCmd::List => return clipboard::list(),
-            ClipCmd::Clear => return exit_on_error(clipboard::clear()),
-            ClipCmd::InstallService => return exit_on_error(clipboard::service::install()),
-            ClipCmd::UninstallService => return exit_on_error(clipboard::service::uninstall()),
+    match &args.command {
+        Some(Cmd::Daemon) => return exit_on_error(daemon::run(args.config.clone())),
+        Some(Cmd::Cliphist { command }) => {
+            let config = || Config::load(args.config.clone());
+            match command.as_ref().unwrap_or(&ClipCmd::Pick) {
+                ClipCmd::Pick => args.mode = Some(ModuleKind::Clipboard),
+                ClipCmd::Daemon => {
+                    return exit_on_error(clipboard::daemon::run(&config().clipboard));
+                }
+                ClipCmd::List => return clipboard::list(),
+                ClipCmd::Clear => return exit_on_error(clipboard::clear()),
+                ClipCmd::InstallService => return exit_on_error(clipboard::service::install()),
+                ClipCmd::UninstallService => return exit_on_error(clipboard::service::uninstall()),
+            }
+        }
+        None => {}
+    }
+
+    // dmenu reads stdin and prints to stdout, so it always runs in this process.
+    if !args.dmenu {
+        match daemon::request() {
+            Ok(daemon::Reply::Shown) => return,
+            Ok(daemon::Reply::Failed(err)) => {
+                eprintln!("launch: {err}");
+                std::process::exit(1);
+            }
+            Ok(daemon::Reply::NotRunning) => {}
+            Err(err) => eprintln!("launch: daemon did not answer, starting without it: {err}"),
         }
     }
 
+    let config = Config::load(args.config.clone());
+    let mut launch_config = LaunchConfig::new();
+    if let Some(font) = config.font_family.clone() {
+        launch_config = launch_config.with_default_font(font);
+    }
+    let loaded = load(&args, config);
+    launch(launch_config.with_window(window_config(loaded, Box::new(Process))));
+}
+
+/// Everything a launcher window shows, loaded before the window exists. It is `Send`, so the
+/// daemon can load it off the event loop thread.
+pub struct Loaded {
+    config: Config,
+    modules: Vec<Module>,
+    tabs: Vec<Tab>,
+    initial: usize,
+    icons: IconResolver,
+    dmenu: Option<DmenuOptions>,
+    rounded: bool,
+    capture: Option<JoinHandle<backdrop::Result<Backdrop>>>,
+}
+
+pub fn load(args: &Args, config: Config) -> Loaded {
     // Grabbed while everything else loads; it has to happen before our window is mapped.
     let capture = (config.blur > 0.)
         .then(|| std::thread::spawn(|| backdrop::pointer_monitor().and_then(backdrop::capture)));
@@ -128,11 +179,11 @@ fn main() {
     // The icon theme is indexed while the modules load.
     let (icons, (modules, initial)) = std::thread::scope(|scope| {
         let icons = scope.spawn(|| IconResolver::new(config.icon_theme.as_deref(), icon_pixels));
-        let modules = load_modules(&args, &config, icon_pixels);
+        let modules = load_modules(args, &config, icon_pixels);
         (icons.join().expect("icon theme loading panicked"), modules)
     });
-    let dmenu = args.dmenu.then_some(DmenuOptions {
-        prompt: args.prompt,
+    let dmenu = args.dmenu.then(|| DmenuOptions {
+        prompt: args.prompt.clone(),
         index: args.index,
         multi: args.multi,
         no_custom: args.no_custom,
@@ -143,13 +194,36 @@ fn main() {
         tabs.insert(0, Tab::All);
     }
     let initial = tabs.iter().position(|tab| *tab == initial).unwrap_or(0);
-    let show_tabs = tabs.len() > 1;
-    let width = config.width as f64;
-    let height = config.window_height(show_tabs) as f64;
-    let default_font = config.font_family.clone();
     let rounded = config.window_radius > 0. && windows::has_compositor();
+    Loaded {
+        config,
+        modules,
+        tabs,
+        initial,
+        icons,
+        dmenu,
+        rounded,
+        capture,
+    }
+}
+
+pub fn window_config(loaded: Loaded, host: Box<dyn Host>) -> WindowConfig {
+    let Loaded {
+        config,
+        modules,
+        tabs,
+        initial,
+        icons,
+        dmenu,
+        rounded,
+        capture,
+    } = loaded;
+    let width = config.width as f64;
+    let height = config.window_height(tabs.len() > 1) as f64;
     let blur = config.blur;
     let window = Rc::new(WindowInfo::default());
+    // Blurs on another thread while the GPU is set up; collected once the window exists.
+    let blurring = Rc::new(Cell::new(None::<JoinHandle<Backdrop>>));
 
     let launcher = Launcher {
         data: Rc::new(LauncherData {
@@ -160,81 +234,79 @@ fn main() {
             rounded,
             config,
             dmenu,
-            host: Box::new(Process),
+            host,
             window: window.clone(),
         }),
     };
 
-    let mut launch_config = LaunchConfig::new();
-    if let Some(font) = default_font {
-        launch_config = launch_config.with_default_font(font);
-    }
-
-    launch(
-        launch_config.with_window(
-            WindowConfig::new_app(launcher)
-                .with_title("launch")
-                .with_app_id("launch")
-                .with_size(width, height)
-                .with_decorations(false)
-                .with_resizable(false)
-                .with_transparency(rounded)
-                .with_background(Color::TRANSPARENT)
-                .with_window_attributes({
-                    let window = window.clone();
-                    move |attributes, event_loop| {
-                        // Dialogs float in tiling window managers (awesome, i3, ...).
-                        let attributes = attributes
-                            .with_window_level(WindowLevel::AlwaysOnTop)
-                            .with_x11_window_type(vec![WindowType::Dialog]);
-                        let captured = capture.and_then(|thread| {
-                            thread
-                                .join()
-                                .unwrap_or_else(|_| Err("capture panicked".into()))
-                                .map_err(|err| {
-                                    eprintln!("launch: cannot capture the desktop to blur: {err}")
-                                })
-                                .ok()
-                        });
-                        // Center on the captured monitor, the one under the pointer, which is
-                        // where window managers tend to open windows. Wayland compositors
-                        // ignore this and place the window themselves.
-                        let Some(monitor) = event_loop
-                            .available_monitors()
-                            .find(|monitor| {
-                                captured.as_ref().is_some_and(|captured| {
-                                    let origin = monitor.position();
-                                    (origin.x, origin.y) == (captured.monitor.x, captured.monitor.y)
-                                })
-                            })
-                            .or_else(|| event_loop.primary_monitor())
-                            .or_else(|| event_loop.available_monitors().next())
-                        else {
-                            return attributes;
-                        };
-                        let scale = monitor.scale_factor();
-                        let origin = monitor.position();
-                        let size = monitor.size();
-                        let x = origin.x + ((size.width as f64 - width * scale) / 2.) as i32;
-                        let y = origin.y + ((size.height as f64 - height * scale) / 2.) as i32;
-                        window.position.set(Some((x, y)));
-                        if let Some(mut captured) = captured {
-                            captured.blur(blur * scale as f32);
-                            let _ = window.backdrop.set(captured);
-                        }
-                        attributes.with_position(PhysicalPosition::new(x, y))
-                    }
-                })
-                .with_window_handle(move |handle| {
-                    let id = match handle.window_handle().map(|handle| handle.as_raw()) {
-                        Ok(RawWindowHandle::Xlib(handle)) => Some(handle.window as u32),
-                        Ok(RawWindowHandle::Xcb(handle)) => Some(handle.window.get()),
-                        _ => None,
-                    };
-                    window.id.set(id);
-                }),
-        ),
-    );
+    WindowConfig::new_app(launcher)
+        .with_title("launch")
+        .with_app_id("launch")
+        .with_size(width, height)
+        .with_decorations(false)
+        .with_resizable(false)
+        .with_transparency(rounded)
+        .with_background(Color::TRANSPARENT)
+        .with_window_attributes({
+            let window = window.clone();
+            let blurring = blurring.clone();
+            move |attributes, event_loop| {
+                // Dialogs float in tiling window managers (awesome, i3, ...).
+                let attributes = attributes
+                    .with_window_level(WindowLevel::AlwaysOnTop)
+                    .with_x11_window_type(vec![WindowType::Dialog]);
+                let captured = capture.and_then(|thread| {
+                    thread
+                        .join()
+                        .unwrap_or_else(|_| Err("capture panicked".into()))
+                        .map_err(|err| {
+                            eprintln!("launch: cannot capture the desktop to blur: {err}")
+                        })
+                        .ok()
+                });
+                // Center on the captured monitor, the one under the pointer, which is
+                // where window managers tend to open windows. Wayland compositors
+                // ignore this and place the window themselves.
+                let Some(monitor) = event_loop
+                    .available_monitors()
+                    .find(|monitor| {
+                        captured.as_ref().is_some_and(|captured| {
+                            let origin = monitor.position();
+                            (origin.x, origin.y) == (captured.monitor.x, captured.monitor.y)
+                        })
+                    })
+                    .or_else(|| event_loop.primary_monitor())
+                    .or_else(|| event_loop.available_monitors().next())
+                else {
+                    return attributes;
+                };
+                let scale = monitor.scale_factor();
+                let origin = monitor.position();
+                let size = monitor.size();
+                let x = origin.x + ((size.width as f64 - width * scale) / 2.) as i32;
+                let y = origin.y + ((size.height as f64 - height * scale) / 2.) as i32;
+                window.position.set(Some((x, y)));
+                if let Some(mut captured) = captured {
+                    let sigma = blur * scale as f32;
+                    blurring.set(Some(std::thread::spawn(move || {
+                        captured.blur(sigma);
+                        captured
+                    })));
+                }
+                attributes.with_position(PhysicalPosition::new(x, y))
+            }
+        })
+        .with_window_handle(move |handle| {
+            if let Some(backdrop) = blurring.take().and_then(|thread| thread.join().ok()) {
+                let _ = window.backdrop.set(backdrop);
+            }
+            let id = match handle.window_handle().map(|handle| handle.as_raw()) {
+                Ok(RawWindowHandle::Xlib(handle)) => Some(handle.window as u32),
+                Ok(RawWindowHandle::Xcb(handle)) => Some(handle.window.get()),
+                _ => None,
+            };
+            window.id.set(id);
+        })
 }
 
 /// The modules to show and the tab to open with.

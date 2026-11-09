@@ -11,7 +11,7 @@ use x11rb::{
     },
 };
 
-type Result<T> = std::result::Result<T, Box<dyn Error + Send + Sync>>;
+pub type Result<T> = std::result::Result<T, Box<dyn Error + Send + Sync>>;
 
 /// The capture is shrunk by this factor; it gets blurred anyway.
 pub const DOWNSCALE: u32 = 4;

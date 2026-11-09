@@ -72,7 +72,8 @@ pub fn deliver(
             .stdout(Stdio::null())
             .stderr(Stdio::null())
             .process_group(0)
-            .spawn()?;
+            .spawn()
+            .map(entries::reap)?;
     }
 
     Ok(())

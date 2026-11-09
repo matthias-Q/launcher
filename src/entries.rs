@@ -4,7 +4,7 @@ use std::{
     io::Write,
     os::unix::process::CommandExt,
     path::{Path, PathBuf},
-    process::{Command, Stdio},
+    process::{Child, Command, Stdio},
 };
 
 use freya::prelude::Bytes;
@@ -263,7 +263,12 @@ pub fn spawn(command: &str, terminal: bool, terminal_command: Option<&str>) -> s
         .stderr(Stdio::null())
         .process_group(0)
         .spawn()
-        .map(|_| ())
+        .map(reap)
+}
+
+/// Waits for `child` in the background so it does not linger as a zombie in the daemon.
+pub fn reap(mut child: Child) {
+    std::thread::spawn(move || child.wait());
 }
 
 /// Pipes `text` into `command`, or `wl-copy` / `xclip` when none is configured.

@@ -6,6 +6,7 @@ A fuzzy searchable application launcher for X11, built with [Freya](https://frey
 
 - **Calc**: type a calculation (`2^10 / 3`, `sqrt(2)*10`, `2pi`) and copy the result.
 - **Apps**: launch desktop applications, ranked by usage history.
+- **Run**: run any executable on `$PATH` (e.g. `~/.cargo/bin`), for programs without a `.desktop` file.
 - **Windows**: switch to open windows, with their icons.
 - **Emoji**: search emoji and copy and/or type them.
 - **Power**: lock, suspend, log out, reboot, shut down (destructive ones ask for a second Enter).
@@ -50,6 +51,14 @@ printf 'a\nb\nc' | launch --dmenu -p 'Pick:' --multi --index --no-custom
 | `PageUp` / `PageDown`            | Move selection by a page   |
 | `Tab` / `Shift+Tab`              | Next / previous tab        |
 | `Alt+1` … `Alt+9`                | Jump to tab                |
+
+## Daemon
+
+`launch daemon` keeps the launcher loaded so it opens faster. Start it with your
+session (it must inherit your `PATH` for the Run module); `launch` then asks it to
+open a window and starts on its own when no daemon is running. Running the same
+command while the launcher is open closes it. dmenu mode never uses the daemon.
+Restart the daemon after installing a new version or changing `font_family`.
 
 ## Clipboard history
 

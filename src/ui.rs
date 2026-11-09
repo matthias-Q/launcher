@@ -33,6 +33,7 @@ pub const TAB_WIDTH: f32 = 96.;
 /// Where results go: stdout and the exit code normally, a recorder in tests.
 pub trait Host {
     fn print(&self, line: &str);
+    /// Closes the launcher. Returns when it only closes the window (the daemon).
     fn exit(&self, code: i32);
 }
 
@@ -266,7 +267,7 @@ impl App for Launcher {
             let expiries: Vec<u64> = data
                 .modules
                 .iter()
-                .flat_map(|module| module.entries.iter().filter_map(|entry| entry.expires))
+                .flat_map(|module| module.entries().iter().filter_map(|entry| entry.expires))
                 .collect();
             if expiries.is_empty() {
                 return;
@@ -298,14 +299,17 @@ impl App for Launcher {
 
         // Behave like a popup: disappear once focus moves elsewhere.
         let was_focused = use_hook(|| Rc::new(Cell::new(false)));
-        use_side_effect(move || {
-            if !close_on_unfocus {
-                return;
-            }
-            if *Platform::get().current_window().is_app_focused.read() {
-                was_focused.set(true);
-            } else if was_focused.get() {
-                std::process::exit(1);
+        use_side_effect({
+            let data = data.clone();
+            move || {
+                if !close_on_unfocus {
+                    return;
+                }
+                if *Platform::get().current_window().is_app_focused.read() {
+                    was_focused.set(true);
+                } else if was_focused.replace(false) {
+                    data.host.exit(1);
+                }
             }
         });
 
@@ -335,9 +339,10 @@ impl App for Launcher {
             });
         });
 
-        // Fade and slide the whole panel in on open.
+        // Fade and slide the whole panel in on open. Short, and from half opacity, so the
+        // launcher feels there as soon as the window maps.
         let entrance = use_animation({
-            let time = anim_time(config, 260);
+            let time = anim_time(config, 150);
             move |conf| {
                 conf.on_creation(OnCreation::Run);
                 AnimNum::new(0., 1.)
@@ -672,7 +677,7 @@ impl App for Launcher {
                 )
         });
 
-        let is_empty = |module: &Module| module.entries.is_empty() && module.compute.is_none();
+        let is_empty = |module: &Module| module.entries().is_empty() && module.compute.is_none();
         let empty_text = match active_tab {
             Tab::Module(m) if data.modules[m].compute.is_some() => {
                 "Type a calculation, like 2^10 / 3"
@@ -757,7 +762,7 @@ impl App for Launcher {
             .font_size(config.font_size)
             .padding(Gaps::new_all(config.padding))
             .spacing(config.padding)
-            .offset_y((1. - progress) * 12.)
+            .offset_y((1. - progress) * 6.)
             .child(input_row)
             .maybe_child(tabs)
             .child(list);
@@ -767,7 +772,7 @@ impl App for Launcher {
             .height(Size::fill())
             .corner_radius(radius)
             .overflow(Overflow::Clip)
-            .opacity(progress)
+            .opacity(0.5 + progress * 0.5)
             .maybe_child(backdrop)
             .child(panel)
     }

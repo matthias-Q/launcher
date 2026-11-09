@@ -1,4 +1,8 @@
-use std::{cell::RefCell, collections::HashSet};
+use std::{
+    cell::{OnceCell, RefCell},
+    collections::HashSet,
+    thread::JoinHandle,
+};
 
 use nucleo_matcher::{
     Matcher, Utf32Str,
@@ -11,7 +15,7 @@ use crate::{
     config::Config,
     emoji,
     entries::{self, Entry, History},
-    power, windows,
+    power, run, windows,
 };
 
 /// The modules that can be listed in the config's `modules` array.
@@ -20,6 +24,7 @@ use crate::{
 pub enum ModuleKind {
     Calc,
     Apps,
+    Run,
     Windows,
     Emoji,
     Power,
@@ -30,7 +35,9 @@ pub enum ModuleKind {
 pub struct Module {
     pub title: &'static str,
     pub placeholder: &'static str,
-    pub entries: Vec<Entry>,
+    /// Filled on first use from `loading` when the entries load in the background.
+    entries: OnceCell<Vec<Entry>>,
+    loading: RefCell<Option<JoinHandle<Vec<Entry>>>>,
     /// Builds the entries from the query instead of filtering `entries` (calculator).
     pub compute: Option<fn(&str) -> Vec<Entry>>,
     /// Usage history; modules without one keep their natural order (e.g. window stacking).
@@ -49,13 +56,37 @@ impl Module {
         Self {
             title,
             placeholder,
-            entries,
+            entries: OnceCell::from(entries),
+            loading: RefCell::default(),
             compute: None,
             history: None,
             browse_in_all: true,
             hidden: RefCell::default(),
             empty: "Nothing here",
         }
+    }
+
+    /// Loads the entries on another thread so startup does not wait for them; they are
+    /// collected the first time they are needed, usually long after they finished.
+    fn in_background(
+        title: &'static str,
+        placeholder: &'static str,
+        load: fn() -> Vec<Entry>,
+    ) -> Self {
+        Self {
+            entries: OnceCell::new(),
+            loading: RefCell::new(Some(std::thread::spawn(load))),
+            ..Self::new(title, placeholder, Vec::new())
+        }
+    }
+
+    pub fn entries(&self) -> &[Entry] {
+        self.entries.get_or_init(|| {
+            self.loading
+                .take()
+                .and_then(|loading| loading.join().ok())
+                .unwrap_or_default()
+        })
     }
 
     fn with_history(mut self, namespace: &str) -> Self {
@@ -73,14 +104,21 @@ impl Module {
                 Self::new("Apps", "Search applications…", entries::desktop_entries())
                     .with_history("apps")
             }
+            // Thousands of commands; "All" only shows them for a query, after the apps.
+            ModuleKind::Run => Self {
+                browse_in_all: false,
+                ..Self::new("Run", "Run command…", run::run_entries())
+            }
+            .with_history("run"),
             ModuleKind::Windows => Self::new(
                 "Windows",
                 "Switch to window…",
                 windows::window_entries(icon_size),
             ),
+            // The slowest module to load (it opens the emoji font), and rarely needed at once.
             ModuleKind::Emoji => Self {
                 browse_in_all: false,
-                ..Self::new("Emoji", "Search emoji…", emoji::emoji_entries())
+                ..Self::in_background("Emoji", "Search emoji…", emoji::emoji_entries)
             }
             .with_history("emoji"),
             ModuleKind::Power => Self {
@@ -133,7 +171,7 @@ impl Module {
     pub fn rank(&self, query: &str) -> Ranked {
         if let Some(compute) = self.compute {
             let computed = compute(query);
-            let base = self.entries.len();
+            let base = self.entries().len();
             return Ranked {
                 hits: (base..base + computed.len()).map(|i| (true, i)).collect(),
                 computed,
@@ -162,12 +200,13 @@ impl Module {
         // Without a query: most recently used first, then the rest in natural order
         // (alphabetical for modules with history).
         if query.trim().is_empty() {
-            let mut indices: Vec<usize> = (0..self.entries.len())
-                .filter(|&i| visible(&self.entries[i]))
+            let entries = self.entries();
+            let mut indices: Vec<usize> = (0..entries.len())
+                .filter(|&i| visible(&entries[i]))
                 .collect();
             if history.is_some() {
                 indices.sort_by_cached_key(|&i| {
-                    let entry = &self.entries[i];
+                    let entry = &entries[i];
                     let used = used(entry);
                     (
                         std::cmp::Reverse(used.last),
@@ -188,7 +227,7 @@ impl Module {
         let mut score = |text: &str| pattern.score(Utf32Str::new(text, &mut buf), &mut matcher);
 
         let mut scored: Vec<(bool, u32, usize)> = self
-            .entries
+            .entries()
             .iter()
             .enumerate()
             .filter(|(_, entry)| visible(entry))
@@ -264,9 +303,9 @@ pub struct Ranked {
 impl Ranked {
     pub fn entry<'a>(&'a self, module: &'a Module, index: usize) -> &'a Entry {
         module
-            .entries
+            .entries()
             .get(index)
-            .unwrap_or_else(|| &self.computed[index - module.entries.len()])
+            .unwrap_or_else(|| &self.computed[index - module.entries().len()])
     }
 }
 
@@ -328,7 +367,7 @@ mod tests {
     #[test]
     fn hidden_entries_are_not_ranked() {
         let module = module(&["a", "b"], true);
-        module.hide(&module.entries[0]);
+        module.hide(&module.entries()[0]);
         assert_eq!(module.rank("").hits, vec![(true, 1)]);
         assert!(module.rank("a").hits.is_empty());
     }
@@ -336,8 +375,9 @@ mod tests {
     #[test]
     fn expired_entries_are_not_ranked() {
         let mut module = module(&["gone", "kept", "later"], true);
-        module.entries[0].expires = Some(1);
-        module.entries[2].expires = Some(u64::MAX);
+        let entries = module.entries.get_mut().unwrap();
+        entries[0].expires = Some(1);
+        entries[2].expires = Some(u64::MAX);
         assert_eq!(module.rank("").hits, vec![(true, 1), (true, 2)]);
     }
 

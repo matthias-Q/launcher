@@ -95,6 +95,7 @@ impl Default for Config {
             modules: vec![
                 ModuleKind::Calc,
                 ModuleKind::Apps,
+                ModuleKind::Run,
                 ModuleKind::Windows,
                 ModuleKind::Emoji,
                 ModuleKind::Power,
@@ -151,9 +152,10 @@ pub const TAB_HEIGHT: f32 = 30.;
 pub const EXAMPLE: &str = r##"# ~/.config/launch/config.toml
 
 # Enabled modules in tab order; also the order of the "All" tab before you type.
-# Available: "calc", "apps", "windows", "emoji", "power", "clipboard".
+# Available: "calc", "apps", "run", "windows", "emoji", "power", "clipboard".
+# "run" lists every executable on $PATH; "All" only shows them once you type.
 # "clipboard" needs the daemon: run `launch cliphist install-service` once.
-modules = ["calc", "apps", "windows", "emoji", "power"]
+modules = ["calc", "apps", "run", "windows", "emoji", "power"]
 # An "All" tab, opened by default, that fuzzy searches every module at once.
 all_tab = true
 
