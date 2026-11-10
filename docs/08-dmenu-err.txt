@@ -1,0 +1,2 @@
+rune: 49 frames at 60 fps, gpu init 453.5 ms, first frame 46.29 ms, frame cpu mean 2.379 ms p50 2.171 p95 6.345 max 46.294, 14 instances
+rune: animating frames 0 (cpu p50 0.000 p95 0.000 ms), at-rest frames 48 (the window draws none; forced cpu p50 2.171 p95 4.733 ms), layout nodes 8, glyphs 10

@@ -1,0 +1,10 @@
+{
+  "launcher": "launch (original, Freya)",
+  "binary": "target/release/launch",
+  "measure": "window-map on live X display :0 (xdotool search poll, 1 ms period)",
+  "runs": 7,
+  "conditions": "cold process each run; warm OS/driver caches; real config at ~/.config/launch/config.toml",
+  "window_map_ms_median": 302.24,
+  "window_map_ms_mad": 10.29,
+  "runs_ms": [302.24, 274.49, 449.39, 309.17, 288.49, 303.47, 291.95]
+}

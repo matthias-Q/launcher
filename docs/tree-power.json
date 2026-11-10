@@ -1,0 +1,1365 @@
+{
+  "accessibility": {
+    "bounds": [
+      0.0,
+      0.0,
+      680.0,
+      516.0
+    ],
+    "children": [
+      {
+        "bounds": [
+          0.0,
+          0.0,
+          680.0,
+          516.0
+        ],
+        "children": [
+          {
+            "bounds": [
+              14.0,
+              14.0,
+              652.0,
+              30.0
+            ],
+            "children": [
+              {
+                "actions": [
+                  "click"
+                ],
+                "bounds": [
+                  14.0,
+                  14.0,
+                  39.5,
+                  30.0
+                ],
+                "children": [
+                  {
+                    "bounds": [
+                      26.0,
+                      20.9,
+                      15.5,
+                      16.3
+                    ],
+                    "name": "All",
+                    "role": "label"
+                  }
+                ],
+                "key": "tab-0",
+                "name": "All",
+                "role": "button"
+              },
+              {
+                "actions": [
+                  "click"
+                ],
+                "bounds": [
+                  59.5,
+                  14.0,
+                  51.5,
+                  30.0
+                ],
+                "children": [
+                  {
+                    "bounds": [
+                      71.5,
+                      20.9,
+                      27.5,
+                      16.3
+                    ],
+                    "name": "Calc",
+                    "role": "label"
+                  }
+                ],
+                "key": "tab-1",
+                "name": "Calc",
+                "role": "button"
+              },
+              {
+                "actions": [
+                  "click"
+                ],
+                "bounds": [
+                  117.0,
+                  14.0,
+                  56.0,
+                  30.0
+                ],
+                "children": [
+                  {
+                    "bounds": [
+                      129.0,
+                      20.9,
+                      32.0,
+                      16.3
+                    ],
+                    "name": "Apps",
+                    "role": "label"
+                  }
+                ],
+                "key": "tab-2",
+                "name": "Apps",
+                "role": "button"
+              },
+              {
+                "actions": [
+                  "click"
+                ],
+                "bounds": [
+                  179.0,
+                  14.0,
+                  81.0,
+                  30.0
+                ],
+                "children": [
+                  {
+                    "bounds": [
+                      191.0,
+                      20.9,
+                      57.0,
+                      16.3
+                    ],
+                    "name": "Windows",
+                    "role": "label"
+                  }
+                ],
+                "key": "tab-3",
+                "name": "Windows",
+                "role": "button"
+              },
+              {
+                "actions": [
+                  "click"
+                ],
+                "bounds": [
+                  266.0,
+                  14.0,
+                  57.5,
+                  30.0
+                ],
+                "children": [
+                  {
+                    "bounds": [
+                      278.0,
+                      20.9,
+                      33.5,
+                      16.3
+                    ],
+                    "name": "Emoji",
+                    "role": "label"
+                  }
+                ],
+                "key": "tab-4",
+                "name": "Emoji",
+                "role": "button"
+              },
+              {
+                "actions": [
+                  "click"
+                ],
+                "bounds": [
+                  329.5,
+                  14.0,
+                  63.0,
+                  30.0
+                ],
+                "children": [
+                  {
+                    "bounds": [
+                      341.5,
+                      20.9,
+                      39.0,
+                      16.3
+                    ],
+                    "name": "Power",
+                    "role": "label"
+                  }
+                ],
+                "key": "tab-5",
+                "name": "Power",
+                "role": "button"
+              }
+            ],
+            "key": "tabs",
+            "role": "group"
+          },
+          {
+            "bounds": [
+              14.0,
+              58.0,
+              652.0,
+              46.0
+            ],
+            "children": [
+              {
+                "actions": [
+                  "click",
+                  "focus",
+                  "set-value",
+                  "replace-selected-text",
+                  "set-text-selection"
+                ],
+                "bounds": [
+                  26.0,
+                  72.9,
+                  628.0,
+                  16.3
+                ],
+                "key": "query",
+                "placeholder": "Lock, suspend, reboot…",
+                "role": "text-input",
+                "states": [
+                  "focused"
+                ],
+                "value": ""
+              }
+            ],
+            "key": "input-row",
+            "role": "group"
+          },
+          {
+            "actions": [
+              "click"
+            ],
+            "bounds": [
+              14.0,
+              118.0,
+              652.0,
+              48.0
+            ],
+            "children": [
+              {
+                "bounds": [
+                  195.0,
+                  125.9,
+                  30.0,
+                  16.3
+                ],
+                "name": "Lock",
+                "role": "label"
+              },
+              {
+                "bounds": [
+                  164.0,
+                  143.1,
+                  92.0,
+                  15.0
+                ],
+                "name": "Lock the screen",
+                "role": "label"
+              }
+            ],
+            "key": "result-0",
+            "name": "Lock Lock the screen",
+            "role": "button"
+          },
+          {
+            "actions": [
+              "click"
+            ],
+            "bounds": [
+              14.0,
+              166.0,
+              652.0,
+              48.0
+            ],
+            "children": [
+              {
+                "bounds": [
+                  185.5,
+                  173.9,
+                  49.0,
+                  16.3
+                ],
+                "name": "Log Out",
+                "role": "label"
+              },
+              {
+                "bounds": [
+                  164.5,
+                  191.1,
+                  91.0,
+                  15.0
+                ],
+                "name": "End the session",
+                "role": "label"
+              }
+            ],
+            "key": "result-1",
+            "name": "Log Out End the session",
+            "role": "button"
+          },
+          {
+            "actions": [
+              "click"
+            ],
+            "bounds": [
+              14.0,
+              214.0,
+              652.0,
+              48.0
+            ],
+            "children": [
+              {
+                "bounds": [
+                  188.0,
+                  221.9,
+                  44.0,
+                  16.3
+                ],
+                "name": "Reboot",
+                "role": "label"
+              },
+              {
+                "bounds": [
+                  149.5,
+                  239.1,
+                  121.0,
+                  15.0
+                ],
+                "name": "Restart the computer",
+                "role": "label"
+              }
+            ],
+            "key": "result-2",
+            "name": "Reboot Restart the computer",
+            "role": "button"
+          },
+          {
+            "actions": [
+              "click"
+            ],
+            "bounds": [
+              14.0,
+              262.0,
+              652.0,
+              48.0
+            ],
+            "children": [
+              {
+                "bounds": [
+                  176.5,
+                  269.9,
+                  67.0,
+                  16.3
+                ],
+                "name": "Shut Down",
+                "role": "label"
+              },
+              {
+                "bounds": [
+                  142.3,
+                  287.1,
+                  135.5,
+                  15.0
+                ],
+                "name": "Power off the computer",
+                "role": "label"
+              }
+            ],
+            "key": "result-3",
+            "name": "Shut Down Power off the computer",
+            "role": "button"
+          },
+          {
+            "actions": [
+              "click"
+            ],
+            "bounds": [
+              14.0,
+              310.0,
+              652.0,
+              48.0
+            ],
+            "children": [
+              {
+                "bounds": [
+                  182.8,
+                  317.9,
+                  54.5,
+                  16.3
+                ],
+                "name": "Suspend",
+                "role": "label"
+              },
+              {
+                "bounds": [
+                  101.3,
+                  335.1,
+                  217.5,
+                  15.0
+                ],
+                "name": "Sleep, keeping the session in memory",
+                "role": "label"
+              }
+            ],
+            "key": "result-4",
+            "name": "Suspend Sleep, keeping the session in memory",
+            "role": "button"
+          }
+        ],
+        "key": "launcher",
+        "role": "group"
+      }
+    ],
+    "name": "Launch",
+    "role": "window"
+  },
+  "anim_t": 0.0,
+  "animating": false,
+  "dark_system": true,
+  "elements": [
+    {
+      "blur": 0.0,
+      "fill": "#181921ff",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "launcher",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher",
+      "rect": [
+        0.0,
+        0.0,
+        680.0,
+        516.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "tabs",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/tabs",
+      "rect": [
+        14.0,
+        14.0,
+        652.0,
+        30.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "tab-0",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/tabs/tab-0",
+      "rect": [
+        14.0,
+        14.0,
+        39.5,
+        30.0
+      ],
+      "role": "button",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#dcdeebff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/tabs/tab-0/#0",
+      "rect": [
+        26.0,
+        20.88,
+        15.5,
+        16.25
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "All"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "tab-1",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/tabs/tab-1",
+      "rect": [
+        59.5,
+        14.0,
+        51.5,
+        30.0
+      ],
+      "role": "button",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#dcdeebff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/tabs/tab-1/#0",
+      "rect": [
+        71.5,
+        20.88,
+        27.5,
+        16.25
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Calc"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "tab-2",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/tabs/tab-2",
+      "rect": [
+        117.0,
+        14.0,
+        56.0,
+        30.0
+      ],
+      "role": "button",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#dcdeebff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/tabs/tab-2/#0",
+      "rect": [
+        129.0,
+        20.88,
+        32.0,
+        16.25
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Apps"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "tab-3",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/tabs/tab-3",
+      "rect": [
+        179.0,
+        14.0,
+        81.0,
+        30.0
+      ],
+      "role": "button",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#dcdeebff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/tabs/tab-3/#0",
+      "rect": [
+        191.0,
+        20.88,
+        57.0,
+        16.25
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Windows"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "tab-4",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/tabs/tab-4",
+      "rect": [
+        266.0,
+        14.0,
+        57.5,
+        30.0
+      ],
+      "role": "button",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#dcdeebff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/tabs/tab-4/#0",
+      "rect": [
+        278.0,
+        20.88,
+        33.5,
+        16.25
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Emoji"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#343a58ff",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "tab-5",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/tabs/tab-5",
+      "rect": [
+        329.5,
+        14.0,
+        63.0,
+        30.0
+      ],
+      "role": "button",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#dcdeebff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/tabs/tab-5/#0",
+      "rect": [
+        341.5,
+        20.88,
+        39.0,
+        16.25
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Power"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#22242eff",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "input-row",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/input-row",
+      "rect": [
+        14.0,
+        58.0,
+        652.0,
+        46.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#dcdeebff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": true,
+      "focused": true,
+      "inert": false,
+      "key": "query",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/input-row/query",
+      "rect": [
+        26.0,
+        72.88,
+        628.0,
+        16.25
+      ],
+      "role": "textbox",
+      "scale": 1.0,
+      "text": ""
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2",
+      "rect": [
+        14.0,
+        118.0,
+        652.0,
+        384.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#343a58ff",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "result-0",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-0",
+      "rect": [
+        14.0,
+        118.0,
+        652.0,
+        48.0
+      ],
+      "role": "button",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-0/#0",
+      "rect": [
+        22.0,
+        126.0,
+        32.0,
+        32.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-0/#1",
+      "rect": [
+        64.0,
+        125.88,
+        292.0,
+        32.25
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#dcdeebff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-0/#1/#0",
+      "rect": [
+        195.0,
+        125.88,
+        30.0,
+        16.25
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Lock"
+    },
+    {
+      "blur": 0.0,
+      "color": "#82869cff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-0/#1/#1",
+      "rect": [
+        164.0,
+        143.13,
+        92.0,
+        15.0
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Lock the screen"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-0/#2",
+      "rect": [
+        366.0,
+        142.0,
+        292.0,
+        0.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "result-1",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-1",
+      "rect": [
+        14.0,
+        166.0,
+        652.0,
+        48.0
+      ],
+      "role": "button",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-1/#0",
+      "rect": [
+        22.0,
+        174.0,
+        32.0,
+        32.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-1/#1",
+      "rect": [
+        64.0,
+        173.88,
+        292.0,
+        32.25
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#dcdeebff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-1/#1/#0",
+      "rect": [
+        185.5,
+        173.88,
+        49.0,
+        16.25
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Log Out"
+    },
+    {
+      "blur": 0.0,
+      "color": "#82869cff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-1/#1/#1",
+      "rect": [
+        164.5,
+        191.13,
+        91.0,
+        15.0
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "End the session"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-1/#2",
+      "rect": [
+        366.0,
+        190.0,
+        292.0,
+        0.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "result-2",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-2",
+      "rect": [
+        14.0,
+        214.0,
+        652.0,
+        48.0
+      ],
+      "role": "button",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-2/#0",
+      "rect": [
+        22.0,
+        222.0,
+        32.0,
+        32.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-2/#1",
+      "rect": [
+        64.0,
+        221.88,
+        292.0,
+        32.25
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#dcdeebff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-2/#1/#0",
+      "rect": [
+        188.0,
+        221.88,
+        44.0,
+        16.25
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Reboot"
+    },
+    {
+      "blur": 0.0,
+      "color": "#82869cff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-2/#1/#1",
+      "rect": [
+        149.5,
+        239.13,
+        121.0,
+        15.0
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Restart the computer"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-2/#2",
+      "rect": [
+        366.0,
+        238.0,
+        292.0,
+        0.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "result-3",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-3",
+      "rect": [
+        14.0,
+        262.0,
+        652.0,
+        48.0
+      ],
+      "role": "button",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-3/#0",
+      "rect": [
+        22.0,
+        270.0,
+        32.0,
+        32.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-3/#1",
+      "rect": [
+        64.0,
+        269.88,
+        292.0,
+        32.25
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#dcdeebff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-3/#1/#0",
+      "rect": [
+        176.5,
+        269.88,
+        67.0,
+        16.25
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Shut Down"
+    },
+    {
+      "blur": 0.0,
+      "color": "#82869cff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-3/#1/#1",
+      "rect": [
+        142.25,
+        287.13,
+        135.5,
+        15.0
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Power off the computer"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-3/#2",
+      "rect": [
+        366.0,
+        286.0,
+        292.0,
+        0.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "result-4",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-4",
+      "rect": [
+        14.0,
+        310.0,
+        652.0,
+        48.0
+      ],
+      "role": "button",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-4/#0",
+      "rect": [
+        22.0,
+        318.0,
+        32.0,
+        32.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-4/#1",
+      "rect": [
+        64.0,
+        317.88,
+        292.0,
+        32.25
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#dcdeebff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-4/#1/#0",
+      "rect": [
+        182.75,
+        317.88,
+        54.5,
+        16.25
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Suspend"
+    },
+    {
+      "blur": 0.0,
+      "color": "#82869cff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-4/#1/#1",
+      "rect": [
+        101.25,
+        335.13,
+        217.5,
+        15.0
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Sleep, keeping the session in memory"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-4/#2",
+      "rect": [
+        366.0,
+        334.0,
+        292.0,
+        0.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    }
+  ],
+  "reduced_motion": false,
+  "scale": 2.0,
+  "t": 0.0,
+  "time_scale": 1.0,
+  "title": "Launch",
+  "viewport": [
+    680.0,
+    516.0
+  ],
+  "warnings": []
+}

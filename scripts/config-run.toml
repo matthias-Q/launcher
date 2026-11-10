@@ -1,0 +1,4 @@
+# Minimal config for verifying the Run module (PATH executables) headlessly.
+modules = ["run"]
+all_tab = false
+rows = 6

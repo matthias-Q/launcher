@@ -1,0 +1,23 @@
+{
+  "launcher": "rune-launch (rune port)",
+  "binary": "target/release/rune-launch",
+  "measure": "script -qec '<bin> --first-pixels --frames 1' (offscreen GPU-complete pixels; pty so dmenu mode is not triggered)",
+  "runs": 7,
+  "conditions": "cold process each run; warm OS/driver caches; real config at ~/.config/launch/config.toml",
+  "median_ms": {
+    "headless_ms": 109.37,
+    "process_ms": 131.62,
+    "gpu_init_ms": 53.12,
+    "frame_cpu_ms": 25.0,
+    "runtime_ms": 22.24,
+    "readback_ms": 9.0
+  },
+  "mad_ms": {
+    "headless_ms": 4.12,
+    "process_ms": 4.06,
+    "gpu_init_ms": 0.77,
+    "frame_cpu_ms": 0.34,
+    "runtime_ms": 0.96,
+    "readback_ms": 2.39
+  }
+}

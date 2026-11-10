@@ -1,3 +1,8 @@
+[workspace]
+resolver = "2"
+members = [".", "rune-launch"]
+
+# The original Freya launch package (kept untouched for comparison).
 [package]
 name = "launch"
 version = "0.1.0"

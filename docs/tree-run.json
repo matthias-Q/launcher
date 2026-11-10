@@ -1,0 +1,2199 @@
+{
+  "accessibility": {
+    "bounds": [
+      0.0,
+      0.0,
+      680.0,
+      516.0
+    ],
+    "children": [
+      {
+        "bounds": [
+          0.0,
+          0.0,
+          680.0,
+          516.0
+        ],
+        "children": [
+          {
+            "bounds": [
+              14.0,
+              14.0,
+              652.0,
+              30.0
+            ],
+            "children": [
+              {
+                "actions": [
+                  "click"
+                ],
+                "bounds": [
+                  14.0,
+                  14.0,
+                  39.5,
+                  30.0
+                ],
+                "children": [
+                  {
+                    "bounds": [
+                      26.0,
+                      20.9,
+                      15.5,
+                      16.3
+                    ],
+                    "name": "All",
+                    "role": "label"
+                  }
+                ],
+                "key": "tab-0",
+                "name": "All",
+                "role": "button"
+              },
+              {
+                "actions": [
+                  "click"
+                ],
+                "bounds": [
+                  59.5,
+                  14.0,
+                  51.5,
+                  30.0
+                ],
+                "children": [
+                  {
+                    "bounds": [
+                      71.5,
+                      20.9,
+                      27.5,
+                      16.3
+                    ],
+                    "name": "Calc",
+                    "role": "label"
+                  }
+                ],
+                "key": "tab-1",
+                "name": "Calc",
+                "role": "button"
+              },
+              {
+                "actions": [
+                  "click"
+                ],
+                "bounds": [
+                  117.0,
+                  14.0,
+                  56.0,
+                  30.0
+                ],
+                "children": [
+                  {
+                    "bounds": [
+                      129.0,
+                      20.9,
+                      32.0,
+                      16.3
+                    ],
+                    "name": "Apps",
+                    "role": "label"
+                  }
+                ],
+                "key": "tab-2",
+                "name": "Apps",
+                "role": "button"
+              },
+              {
+                "actions": [
+                  "click"
+                ],
+                "bounds": [
+                  179.0,
+                  14.0,
+                  81.0,
+                  30.0
+                ],
+                "children": [
+                  {
+                    "bounds": [
+                      191.0,
+                      20.9,
+                      57.0,
+                      16.3
+                    ],
+                    "name": "Windows",
+                    "role": "label"
+                  }
+                ],
+                "key": "tab-3",
+                "name": "Windows",
+                "role": "button"
+              },
+              {
+                "actions": [
+                  "click"
+                ],
+                "bounds": [
+                  266.0,
+                  14.0,
+                  57.5,
+                  30.0
+                ],
+                "children": [
+                  {
+                    "bounds": [
+                      278.0,
+                      20.9,
+                      33.5,
+                      16.3
+                    ],
+                    "name": "Emoji",
+                    "role": "label"
+                  }
+                ],
+                "key": "tab-4",
+                "name": "Emoji",
+                "role": "button"
+              },
+              {
+                "actions": [
+                  "click"
+                ],
+                "bounds": [
+                  329.5,
+                  14.0,
+                  63.0,
+                  30.0
+                ],
+                "children": [
+                  {
+                    "bounds": [
+                      341.5,
+                      20.9,
+                      39.0,
+                      16.3
+                    ],
+                    "name": "Power",
+                    "role": "label"
+                  }
+                ],
+                "key": "tab-5",
+                "name": "Power",
+                "role": "button"
+              }
+            ],
+            "key": "tabs",
+            "role": "group"
+          },
+          {
+            "bounds": [
+              14.0,
+              58.0,
+              652.0,
+              46.0
+            ],
+            "children": [
+              {
+                "actions": [
+                  "click",
+                  "focus",
+                  "set-value",
+                  "replace-selected-text",
+                  "set-text-selection"
+                ],
+                "bounds": [
+                  26.0,
+                  72.9,
+                  628.0,
+                  16.3
+                ],
+                "key": "query",
+                "placeholder": "Search apps, windows, emoji…",
+                "role": "text-input",
+                "states": [
+                  "focused"
+                ],
+                "value": ""
+              }
+            ],
+            "key": "input-row",
+            "role": "group"
+          },
+          {
+            "actions": [
+              "click"
+            ],
+            "bounds": [
+              14.0,
+              118.0,
+              652.0,
+              48.0
+            ],
+            "children": [
+              {
+                "bounds": [
+                  70.0,
+                  134.5,
+                  30.0,
+                  15.0
+                ],
+                "name": "Apps",
+                "role": "label"
+              },
+              {
+                "bounds": [
+                  218.3,
+                  125.9,
+                  61.5,
+                  16.3
+                ],
+                "name": "Spectacle",
+                "role": "label"
+              },
+              {
+                "bounds": [
+                  175.3,
+                  143.1,
+                  147.5,
+                  15.0
+                ],
+                "name": "Screenshot capture utility",
+                "role": "label"
+              }
+            ],
+            "key": "result-0",
+            "name": "Apps Spectacle Screenshot capture utility",
+            "role": "button"
+          },
+          {
+            "actions": [
+              "click"
+            ],
+            "bounds": [
+              14.0,
+              166.0,
+              652.0,
+              48.0
+            ],
+            "children": [
+              {
+                "bounds": [
+                  70.0,
+                  182.5,
+                  30.0,
+                  15.0
+                ],
+                "name": "Apps",
+                "role": "label"
+              },
+              {
+                "bounds": [
+                  220.5,
+                  181.9,
+                  57.0,
+                  16.3
+                ],
+                "name": "Slingshot",
+                "role": "label"
+              }
+            ],
+            "key": "result-1",
+            "name": "Apps Slingshot",
+            "role": "button"
+          },
+          {
+            "actions": [
+              "click"
+            ],
+            "bounds": [
+              14.0,
+              214.0,
+              652.0,
+              48.0
+            ],
+            "children": [
+              {
+                "bounds": [
+                  70.0,
+                  230.5,
+                  30.0,
+                  15.0
+                ],
+                "name": "Apps",
+                "role": "label"
+              },
+              {
+                "bounds": [
+                  251.5,
+                  221.9,
+                  47.5,
+                  16.3
+                ],
+                "name": "Blender",
+                "role": "label"
+              },
+              {
+                "bounds": [
+                  116.0,
+                  239.1,
+                  318.5,
+                  15.0
+                ],
+                "name": "3D modeling, animation, rendering and post-production",
+                "role": "label"
+              }
+            ],
+            "key": "result-2",
+            "name": "Apps Blender 3D modeling, animation, rendering and post-production",
+            "role": "button"
+          },
+          {
+            "actions": [
+              "click"
+            ],
+            "bounds": [
+              14.0,
+              262.0,
+              652.0,
+              48.0
+            ],
+            "children": [
+              {
+                "bounds": [
+                  70.0,
+                  278.5,
+                  30.0,
+                  15.0
+                ],
+                "name": "Apps",
+                "role": "label"
+              },
+              {
+                "bounds": [
+                  224.5,
+                  269.9,
+                  49.0,
+                  16.3
+                ],
+                "name": "ARandR",
+                "role": "label"
+              },
+              {
+                "bounds": [
+                  203.5,
+                  287.1,
+                  91.0,
+                  15.0
+                ],
+                "name": "Screen Settings",
+                "role": "label"
+              }
+            ],
+            "key": "result-3",
+            "name": "Apps ARandR Screen Settings",
+            "role": "button"
+          },
+          {
+            "actions": [
+              "click"
+            ],
+            "bounds": [
+              14.0,
+              310.0,
+              652.0,
+              48.0
+            ],
+            "children": [
+              {
+                "bounds": [
+                  70.0,
+                  326.5,
+                  30.0,
+                  15.0
+                ],
+                "name": "Apps",
+                "role": "label"
+              },
+              {
+                "bounds": [
+                  174.5,
+                  317.9,
+                  149.0,
+                  16.3
+                ],
+                "name": "Chromium Web Browser",
+                "role": "label"
+              },
+              {
+                "bounds": [
+                  193.0,
+                  335.1,
+                  112.0,
+                  15.0
+                ],
+                "name": "Access the Internet",
+                "role": "label"
+              }
+            ],
+            "key": "result-4",
+            "name": "Apps Chromium Web Browser Access the Internet",
+            "role": "button"
+          },
+          {
+            "actions": [
+              "click"
+            ],
+            "bounds": [
+              14.0,
+              358.0,
+              652.0,
+              48.0
+            ],
+            "children": [
+              {
+                "bounds": [
+                  70.0,
+                  374.5,
+                  30.0,
+                  15.0
+                ],
+                "name": "Apps",
+                "role": "label"
+              },
+              {
+                "bounds": [
+                  213.5,
+                  365.9,
+                  71.0,
+                  16.3
+                ],
+                "name": "dbeaver-ce",
+                "role": "label"
+              },
+              {
+                "bounds": [
+                  120.3,
+                  383.1,
+                  257.5,
+                  15.0
+                ],
+                "name": "Universal Database Manager and SQL Client.",
+                "role": "label"
+              }
+            ],
+            "key": "result-5",
+            "name": "Apps dbeaver-ce Universal Database Manager and SQL Client.",
+            "role": "button"
+          },
+          {
+            "actions": [
+              "click"
+            ],
+            "bounds": [
+              14.0,
+              406.0,
+              652.0,
+              48.0
+            ],
+            "children": [
+              {
+                "bounds": [
+                  70.0,
+                  422.5,
+                  30.0,
+                  15.0
+                ],
+                "name": "Apps",
+                "role": "label"
+              },
+              {
+                "bounds": [
+                  165.5,
+                  413.9,
+                  167.0,
+                  16.3
+                ],
+                "name": "PulseAudio Volume Control",
+                "role": "label"
+              },
+              {
+                "bounds": [
+                  182.3,
+                  431.1,
+                  133.5,
+                  15.0
+                ],
+                "name": "Adjust the volume level",
+                "role": "label"
+              }
+            ],
+            "key": "result-6",
+            "name": "Apps PulseAudio Volume Control Adjust the volume level",
+            "role": "button"
+          },
+          {
+            "actions": [
+              "click"
+            ],
+            "bounds": [
+              14.0,
+              454.0,
+              652.0,
+              48.0
+            ],
+            "children": [
+              {
+                "bounds": [
+                  70.0,
+                  470.5,
+                  30.0,
+                  15.0
+                ],
+                "name": "Apps",
+                "role": "label"
+              },
+              {
+                "bounds": [
+                  182.5,
+                  461.9,
+                  133.0,
+                  16.3
+                ],
+                "name": "Add Bluetooth Device",
+                "role": "label"
+              },
+              {
+                "bounds": [
+                  187.0,
+                  479.1,
+                  124.0,
+                  15.0
+                ],
+                "name": "Add Bluetooth Device",
+                "role": "label"
+              }
+            ],
+            "key": "result-7",
+            "name": "Apps Add Bluetooth Device Add Bluetooth Device",
+            "role": "button"
+          }
+        ],
+        "key": "launcher",
+        "role": "group"
+      }
+    ],
+    "name": "Launch",
+    "role": "window"
+  },
+  "anim_t": 0.0,
+  "animating": false,
+  "dark_system": true,
+  "elements": [
+    {
+      "blur": 0.0,
+      "fill": "#181921ff",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "launcher",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher",
+      "rect": [
+        0.0,
+        0.0,
+        680.0,
+        516.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "tabs",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/tabs",
+      "rect": [
+        14.0,
+        14.0,
+        652.0,
+        30.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#343a58ff",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "tab-0",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/tabs/tab-0",
+      "rect": [
+        14.0,
+        14.0,
+        39.5,
+        30.0
+      ],
+      "role": "button",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#dcdeebff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/tabs/tab-0/#0",
+      "rect": [
+        26.0,
+        20.88,
+        15.5,
+        16.25
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "All"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "tab-1",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/tabs/tab-1",
+      "rect": [
+        59.5,
+        14.0,
+        51.5,
+        30.0
+      ],
+      "role": "button",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#dcdeebff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/tabs/tab-1/#0",
+      "rect": [
+        71.5,
+        20.88,
+        27.5,
+        16.25
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Calc"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "tab-2",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/tabs/tab-2",
+      "rect": [
+        117.0,
+        14.0,
+        56.0,
+        30.0
+      ],
+      "role": "button",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#dcdeebff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/tabs/tab-2/#0",
+      "rect": [
+        129.0,
+        20.88,
+        32.0,
+        16.25
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Apps"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "tab-3",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/tabs/tab-3",
+      "rect": [
+        179.0,
+        14.0,
+        81.0,
+        30.0
+      ],
+      "role": "button",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#dcdeebff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/tabs/tab-3/#0",
+      "rect": [
+        191.0,
+        20.88,
+        57.0,
+        16.25
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Windows"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "tab-4",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/tabs/tab-4",
+      "rect": [
+        266.0,
+        14.0,
+        57.5,
+        30.0
+      ],
+      "role": "button",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#dcdeebff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/tabs/tab-4/#0",
+      "rect": [
+        278.0,
+        20.88,
+        33.5,
+        16.25
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Emoji"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "tab-5",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/tabs/tab-5",
+      "rect": [
+        329.5,
+        14.0,
+        63.0,
+        30.0
+      ],
+      "role": "button",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#dcdeebff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/tabs/tab-5/#0",
+      "rect": [
+        341.5,
+        20.88,
+        39.0,
+        16.25
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Power"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#22242eff",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "input-row",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/input-row",
+      "rect": [
+        14.0,
+        58.0,
+        652.0,
+        46.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#dcdeebff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": true,
+      "focused": true,
+      "inert": false,
+      "key": "query",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/input-row/query",
+      "rect": [
+        26.0,
+        72.88,
+        628.0,
+        16.25
+      ],
+      "role": "textbox",
+      "scale": 1.0,
+      "text": ""
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2",
+      "rect": [
+        14.0,
+        118.0,
+        652.0,
+        384.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#343a58ff",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "result-0",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-0",
+      "rect": [
+        14.0,
+        118.0,
+        652.0,
+        48.0
+      ],
+      "role": "button",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-0/#0",
+      "rect": [
+        22.0,
+        126.0,
+        32.0,
+        32.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#22242eff",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-0/#1",
+      "rect": [
+        64.0,
+        133.0,
+        42.0,
+        18.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#82869cff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-0/#1/#0",
+      "rect": [
+        70.0,
+        134.5,
+        30.0,
+        15.0
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Apps"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-0/#2",
+      "rect": [
+        116.0,
+        125.88,
+        266.0,
+        32.25
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#dcdeebff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-0/#2/#0",
+      "rect": [
+        218.25,
+        125.88,
+        61.5,
+        16.25
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Spectacle"
+    },
+    {
+      "blur": 0.0,
+      "color": "#82869cff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-0/#2/#1",
+      "rect": [
+        175.25,
+        143.13,
+        147.5,
+        15.0
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Screenshot capture utility"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-0/#3",
+      "rect": [
+        392.0,
+        142.0,
+        266.0,
+        0.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "result-1",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-1",
+      "rect": [
+        14.0,
+        166.0,
+        652.0,
+        48.0
+      ],
+      "role": "button",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-1/#0",
+      "rect": [
+        22.0,
+        174.0,
+        32.0,
+        32.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#22242eff",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-1/#1",
+      "rect": [
+        64.0,
+        181.0,
+        42.0,
+        18.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#82869cff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-1/#1/#0",
+      "rect": [
+        70.0,
+        182.5,
+        30.0,
+        15.0
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Apps"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-1/#2",
+      "rect": [
+        116.0,
+        181.88,
+        266.0,
+        16.25
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#dcdeebff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-1/#2/#0",
+      "rect": [
+        220.5,
+        181.88,
+        57.0,
+        16.25
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Slingshot"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-1/#3",
+      "rect": [
+        392.0,
+        190.0,
+        266.0,
+        0.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "result-2",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-2",
+      "rect": [
+        14.0,
+        214.0,
+        652.0,
+        48.0
+      ],
+      "role": "button",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-2/#0",
+      "rect": [
+        22.0,
+        222.0,
+        32.0,
+        32.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#22242eff",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-2/#1",
+      "rect": [
+        64.0,
+        229.0,
+        42.0,
+        18.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#82869cff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-2/#1/#0",
+      "rect": [
+        70.0,
+        230.5,
+        30.0,
+        15.0
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Apps"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-2/#2",
+      "rect": [
+        116.0,
+        221.88,
+        318.5,
+        32.25
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#dcdeebff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-2/#2/#0",
+      "rect": [
+        251.5,
+        221.88,
+        47.5,
+        16.25
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Blender"
+    },
+    {
+      "blur": 0.0,
+      "color": "#82869cff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-2/#2/#1",
+      "rect": [
+        116.0,
+        239.13,
+        318.5,
+        15.0
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "3D modeling, animation, rendering and post-production"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-2/#3",
+      "rect": [
+        444.5,
+        238.0,
+        213.5,
+        0.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "result-3",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-3",
+      "rect": [
+        14.0,
+        262.0,
+        652.0,
+        48.0
+      ],
+      "role": "button",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-3/#0",
+      "rect": [
+        22.0,
+        270.0,
+        32.0,
+        32.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#22242eff",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-3/#1",
+      "rect": [
+        64.0,
+        277.0,
+        42.0,
+        18.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#82869cff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-3/#1/#0",
+      "rect": [
+        70.0,
+        278.5,
+        30.0,
+        15.0
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Apps"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-3/#2",
+      "rect": [
+        116.0,
+        269.88,
+        266.0,
+        32.25
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#dcdeebff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-3/#2/#0",
+      "rect": [
+        224.5,
+        269.88,
+        49.0,
+        16.25
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "ARandR"
+    },
+    {
+      "blur": 0.0,
+      "color": "#82869cff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-3/#2/#1",
+      "rect": [
+        203.5,
+        287.13,
+        91.0,
+        15.0
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Screen Settings"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-3/#3",
+      "rect": [
+        392.0,
+        286.0,
+        266.0,
+        0.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "result-4",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-4",
+      "rect": [
+        14.0,
+        310.0,
+        652.0,
+        48.0
+      ],
+      "role": "button",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-4/#0",
+      "rect": [
+        22.0,
+        318.0,
+        32.0,
+        32.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#22242eff",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-4/#1",
+      "rect": [
+        64.0,
+        325.0,
+        42.0,
+        18.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#82869cff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-4/#1/#0",
+      "rect": [
+        70.0,
+        326.5,
+        30.0,
+        15.0
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Apps"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-4/#2",
+      "rect": [
+        116.0,
+        317.88,
+        266.0,
+        32.25
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#dcdeebff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-4/#2/#0",
+      "rect": [
+        174.5,
+        317.88,
+        149.0,
+        16.25
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Chromium Web Browser"
+    },
+    {
+      "blur": 0.0,
+      "color": "#82869cff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-4/#2/#1",
+      "rect": [
+        193.0,
+        335.13,
+        112.0,
+        15.0
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Access the Internet"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-4/#3",
+      "rect": [
+        392.0,
+        334.0,
+        266.0,
+        0.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "result-5",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-5",
+      "rect": [
+        14.0,
+        358.0,
+        652.0,
+        48.0
+      ],
+      "role": "button",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-5/#0",
+      "rect": [
+        22.0,
+        366.0,
+        32.0,
+        32.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#22242eff",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-5/#1",
+      "rect": [
+        64.0,
+        373.0,
+        42.0,
+        18.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#82869cff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-5/#1/#0",
+      "rect": [
+        70.0,
+        374.5,
+        30.0,
+        15.0
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Apps"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-5/#2",
+      "rect": [
+        116.0,
+        365.88,
+        266.0,
+        32.25
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#dcdeebff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-5/#2/#0",
+      "rect": [
+        213.5,
+        365.88,
+        71.0,
+        16.25
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "dbeaver-ce"
+    },
+    {
+      "blur": 0.0,
+      "color": "#82869cff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-5/#2/#1",
+      "rect": [
+        120.25,
+        383.13,
+        257.5,
+        15.0
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Universal Database Manager and SQL Client."
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-5/#3",
+      "rect": [
+        392.0,
+        382.0,
+        266.0,
+        0.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "result-6",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-6",
+      "rect": [
+        14.0,
+        406.0,
+        652.0,
+        48.0
+      ],
+      "role": "button",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-6/#0",
+      "rect": [
+        22.0,
+        414.0,
+        32.0,
+        32.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#22242eff",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-6/#1",
+      "rect": [
+        64.0,
+        421.0,
+        42.0,
+        18.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#82869cff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-6/#1/#0",
+      "rect": [
+        70.0,
+        422.5,
+        30.0,
+        15.0
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Apps"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-6/#2",
+      "rect": [
+        116.0,
+        413.88,
+        266.0,
+        32.25
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#dcdeebff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-6/#2/#0",
+      "rect": [
+        165.5,
+        413.88,
+        167.0,
+        16.25
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "PulseAudio Volume Control"
+    },
+    {
+      "blur": 0.0,
+      "color": "#82869cff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-6/#2/#1",
+      "rect": [
+        182.25,
+        431.13,
+        133.5,
+        15.0
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Adjust the volume level"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-6/#3",
+      "rect": [
+        392.0,
+        430.0,
+        266.0,
+        0.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "key": "result-7",
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-7",
+      "rect": [
+        14.0,
+        454.0,
+        652.0,
+        48.0
+      ],
+      "role": "button",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-7/#0",
+      "rect": [
+        22.0,
+        462.0,
+        32.0,
+        32.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "fill": "#22242eff",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-7/#1",
+      "rect": [
+        64.0,
+        469.0,
+        42.0,
+        18.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#82869cff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-7/#1/#0",
+      "rect": [
+        70.0,
+        470.5,
+        30.0,
+        15.0
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Apps"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-7/#2",
+      "rect": [
+        116.0,
+        461.88,
+        266.0,
+        32.25
+      ],
+      "role": "group",
+      "scale": 1.0
+    },
+    {
+      "blur": 0.0,
+      "color": "#dcdeebff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-7/#2/#0",
+      "rect": [
+        182.5,
+        461.88,
+        133.0,
+        16.25
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Add Bluetooth Device"
+    },
+    {
+      "blur": 0.0,
+      "color": "#82869cff",
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-7/#2/#1",
+      "rect": [
+        187.0,
+        479.13,
+        124.0,
+        15.0
+      ],
+      "role": "text",
+      "scale": 1.0,
+      "text": "Add Bluetooth Device"
+    },
+    {
+      "blur": 0.0,
+      "fill": "#00000000",
+      "focusVisible": false,
+      "focusable": false,
+      "focused": false,
+      "inert": false,
+      "loopPhase": null,
+      "opacity": 1.0,
+      "path": "launcher/#2/result-7/#3",
+      "rect": [
+        392.0,
+        478.0,
+        266.0,
+        0.0
+      ],
+      "role": "group",
+      "scale": 1.0
+    }
+  ],
+  "reduced_motion": false,
+  "scale": 2.0,
+  "t": 0.0,
+  "time_scale": 1.0,
+  "title": "Launch",
+  "viewport": [
+    680.0,
+    516.0
+  ],
+  "warnings": []
+}
